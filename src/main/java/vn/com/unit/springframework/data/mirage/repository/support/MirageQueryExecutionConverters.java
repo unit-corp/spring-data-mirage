@@ -1,0 +1,488 @@
+package vn.com.unit.springframework.data.mirage.repository.support;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Future;
+import java.util.function.Function;
+import java.util.stream.Stream;
+
+import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.TypeDescriptor;
+import org.springframework.core.convert.converter.ConditionalGenericConverter;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.core.convert.converter.GenericConverter;
+import org.springframework.core.convert.support.ConfigurableConversionService;
+import org.springframework.core.convert.support.DefaultConversionService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Window;
+import org.springframework.data.geo.GeoResults;
+import org.springframework.data.util.CustomCollections;
+import org.springframework.data.util.NullableWrapper;
+import org.springframework.data.util.NullableWrapperConverters;
+import org.springframework.data.util.StreamUtils;
+import org.springframework.data.util.Streamable;
+import org.springframework.data.util.TypeInformation;
+import org.springframework.lang.Nullable;
+import org.springframework.scheduling.annotation.AsyncResult;
+import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
+import org.springframework.util.ConcurrentReferenceHashMap;
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.concurrent.ListenableFuture;
+
+/**
+ * refer QueryExecutionConverters
+ */
+public abstract class MirageQueryExecutionConverters   {
+	private static final boolean VAVR_PRESENT = ClassUtils.isPresent("io.vavr.control.Try",
+			MirageQueryExecutionConverters.class.getClassLoader());
+
+	private static final Set<WrapperType> WRAPPER_TYPES = new HashSet<>();
+	private static final Set<WrapperType> UNWRAPPER_TYPES = new HashSet<WrapperType>();
+	private static final Set<Function<Object, Object>> UNWRAPPERS = new HashSet<>();
+	private static final Set<Class<?>> ALLOWED_PAGEABLE_TYPES = new HashSet<>();
+	private static final Map<Class<?>, ExecutionAdapter> EXECUTION_ADAPTER = new HashMap<>();
+	private static final Map<Class<?>, Boolean> supportsCache = new ConcurrentReferenceHashMap<>();
+	private static final TypeInformation<Void> VOID_INFORMATION = TypeInformation.of(Void.class);
+
+	static {
+
+		WRAPPER_TYPES.add(WrapperType.singleValue(Future.class));
+		UNWRAPPER_TYPES.add(WrapperType.singleValue(Future.class));
+		WRAPPER_TYPES.add(WrapperType.singleValue(ListenableFuture.class));
+		WRAPPER_TYPES.add(WrapperType.singleValue(CompletableFuture.class));
+		UNWRAPPER_TYPES.add(WrapperType.singleValue(ListenableFuture.class));
+		UNWRAPPER_TYPES.add(WrapperType.singleValue(CompletableFuture.class));
+
+		ALLOWED_PAGEABLE_TYPES.add(Slice.class);
+		ALLOWED_PAGEABLE_TYPES.add(Page.class);
+		ALLOWED_PAGEABLE_TYPES.add(List.class);
+		ALLOWED_PAGEABLE_TYPES.add(Window.class);
+
+		WRAPPER_TYPES.add(NullableWrapperToCompletableFutureConverter.getWrapperType());
+
+		UNWRAPPERS.addAll(CustomCollections.getUnwrappers());
+
+		CustomCollections.getCustomTypes().stream().map(WrapperType::multiValue).forEach(WRAPPER_TYPES::add);
+
+		CustomCollections.getPaginationReturnTypes().forEach(ALLOWED_PAGEABLE_TYPES::add);
+
+		if (VAVR_PRESENT) {
+
+			// Try support
+			WRAPPER_TYPES.add(WrapperType.singleValue(io.vavr.control.Try.class));
+			EXECUTION_ADAPTER.put(io.vavr.control.Try.class, it -> io.vavr.control.Try.of(it::get));
+		}
+	}
+
+	private MirageQueryExecutionConverters() {}
+
+	/**
+	 * Returns whether the given type is a supported wrapper type.
+	 *
+	 * @param type must not be {@literal null}.
+	 * @return
+	 */
+	public static boolean supports(Class<?> type) {
+
+		Assert.notNull(type, "Type must not be null");
+
+		return supportsCache.computeIfAbsent(type, key -> {
+
+			for (WrapperType candidate : WRAPPER_TYPES) {
+				if (candidate.getType().isAssignableFrom(key)) {
+					return true;
+				}
+			}
+
+			return NullableWrapperConverters.supports(type);
+		});
+	}
+
+	/**
+	 * Returns whether the given wrapper type supports unwrapping.
+	 *
+	 * @param type must not be {@literal null}.
+	 * @return
+	 */
+	public static boolean supportsUnwrapping(Class<?> type) {
+
+		Assert.notNull(type, "Type must not be null");
+
+		if (NullableWrapperConverters.supportsUnwrapping(type)) {
+			return NullableWrapperConverters.supportsUnwrapping(type);
+		}
+
+		for (WrapperType candidate : UNWRAPPER_TYPES) {
+			if (candidate.getType().isAssignableFrom(type)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	public static boolean isSingleValue(Class<?> type) {
+
+		if (NullableWrapperConverters.supports(type)) {
+			return NullableWrapperConverters.isSingleValue(type);
+		}
+
+		for (WrapperType candidate : WRAPPER_TYPES) {
+			if (candidate.getType().isAssignableFrom(type)) {
+				return candidate.isSingleValue();
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Returns the types that are supported on paginating query methods. Will include custom collection types of e.g.
+	 * Vavr.
+	 *
+	 * @return
+	 */
+	public static Set<Class<?>> getAllowedPageableTypes() {
+		return Collections.unmodifiableSet(ALLOWED_PAGEABLE_TYPES);
+	}
+
+	/**
+	 * Registers converters for wrapper types found on the classpath.
+	 *
+	 * @param conversionService must not be {@literal null}.
+	 */
+	public static void registerConvertersIn(ConfigurableConversionService conversionService) {
+
+		Assert.notNull(conversionService, "ConversionService must not be null");
+
+		conversionService.removeConvertible(Collection.class, Object.class);
+
+		NullableWrapperConverters.registerConvertersIn(conversionService);
+		CustomCollections.registerConvertersIn(conversionService);
+
+		conversionService.addConverter(new NullableWrapperToCompletableFutureConverter());
+		conversionService.addConverter(new NullableWrapperToFutureConverter());
+		conversionService.addConverter(new IterableToStreamableConverter());
+	}
+
+	/**
+	 * Unwraps the given source value in case it's one of the currently supported wrapper types detected at runtime.
+	 *
+	 * @param source can be {@literal null}.
+	 * @return
+	 */
+	@Nullable
+	public static Object unwrap(@Nullable Object source) {
+
+		source = NullableWrapperConverters.unwrap(source);
+
+		if (source == null || !supports(source.getClass())) {
+			return source;
+		}
+
+		for (Function<Object, Object> converter : UNWRAPPERS) {
+
+			Object result = converter.apply(source);
+
+			if (result != source) {
+				return result;
+			}
+		}
+
+		return source;
+	}
+
+	/**
+	 * Recursively unwraps well known wrapper types from the given {@link TypeInformation} but aborts at the given
+	 * reference type.
+	 *
+	 * @param type must not be {@literal null}.
+	 * @param reference must not be {@literal null}.
+	 * @return will never be {@literal null}.
+	 */
+	public static TypeInformation<?> unwrapWrapperTypes(TypeInformation<?> type, TypeInformation<?> reference) {
+
+		Assert.notNull(type, "type must not be null");
+// VinhLT : comment for return domain jpa is object
+//		if (reference.isAssignableFrom(type)) {
+//			return type;
+//		}
+
+		Class<?> rawType = type.getType();
+
+		boolean needToUnwrap = type.isCollectionLike() //
+				|| Slice.class.isAssignableFrom(rawType) //
+				|| GeoResults.class.isAssignableFrom(rawType) //
+				|| rawType.isArray() //
+				|| supports(rawType) //
+				|| Stream.class.isAssignableFrom(rawType);
+
+		return needToUnwrap ? unwrapWrapperTypes(type.getRequiredComponentType(), reference) : type;
+	}
+
+	/**
+	 * Recursively unwraps well known wrapper types from the given {@link TypeInformation}.
+	 *
+	 * @param type must not be {@literal null}.
+	 * @return will never be {@literal null}.
+	 */
+	public static TypeInformation<?> unwrapWrapperTypes(TypeInformation<?> type) {
+		return unwrapWrapperTypes(type, VOID_INFORMATION);
+	}
+
+	/**
+	 * Returns the {@link ExecutionAdapter} to be used for the given return type.
+	 *
+	 * @param returnType must not be {@literal null}.
+	 * @return can be {@literal null}.
+	 */
+	@Nullable
+	public static ExecutionAdapter getExecutionAdapter(Class<?> returnType) {
+
+		Assert.notNull(returnType, "Return type must not be null");
+
+		return EXECUTION_ADAPTER.get(returnType);
+	}
+
+	public interface ThrowingSupplier {
+		Object get() throws Throwable;
+	}
+
+	public interface ExecutionAdapter {
+		Object apply(ThrowingSupplier supplier) throws Throwable;
+	}
+
+	/**
+	 * Base class for converters that create instances of wrapper types such as Google Guava's and JDK 8's
+	 * {@code Optional} types.
+	 *
+	 * @author Oliver Gierke
+	 */
+	private static abstract class AbstractWrapperTypeConverter implements GenericConverter {
+
+		private final Object nullValue;
+		private final Iterable<Class<?>> wrapperTypes;
+
+		/**
+		 * Creates a new {@link AbstractWrapperTypeConverter} using the given {@link ConversionService} and wrapper type.
+		 *
+		 * @param nullValue must not be {@literal null}.
+		 */
+		AbstractWrapperTypeConverter(Object nullValue) {
+
+			Assert.notNull(nullValue, "Null value must not be null");
+
+			this.nullValue = nullValue;
+			this.wrapperTypes = Collections.singleton(nullValue.getClass());
+		}
+
+		AbstractWrapperTypeConverter(Object nullValue, Iterable<Class<?>> wrapperTypes) {
+			this.nullValue = nullValue;
+			this.wrapperTypes = wrapperTypes;
+		}
+
+		@Override
+		public Set<ConvertiblePair> getConvertibleTypes() {
+
+			return Streamable.of(wrapperTypes)//
+					.map(it -> new ConvertiblePair(NullableWrapper.class, it))//
+					.stream().collect(StreamUtils.toUnmodifiableSet());
+		}
+
+		@Nullable
+		@Override
+		public final Object convert(@Nullable Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+
+			if (source == null) {
+				return null;
+			}
+
+			NullableWrapper wrapper = (NullableWrapper) source;
+			Object value = wrapper.getValue();
+
+			// TODO: Add Recursive conversion once we move to Spring 4
+			return value == null ? nullValue : wrap(value);
+		}
+
+		/**
+		 * Wrap the given, non-{@literal null} value into the wrapper type.
+		 *
+		 * @param source will never be {@literal null}.
+		 * @return must not be {@literal null}.
+		 */
+		protected abstract Object wrap(Object source);
+	}
+
+	/**
+	 * A Spring {@link Converter} to support returning {@link Future} instances from repository methods.
+	 *
+	 * @author Oliver Gierke
+	 */
+	@Deprecated(since = "3.0")
+	private static class NullableWrapperToFutureConverter extends AbstractWrapperTypeConverter {
+
+		/**
+		 * Creates a new {@link NullableWrapperToFutureConverter} using the given {@link ConversionService}.
+		 */
+		NullableWrapperToFutureConverter() {
+			super(new AsyncResult<>(null), List.of(ListenableFuture.class));
+		}
+
+		@Override
+		protected Object wrap(Object source) {
+			return new AsyncResult<>(source);
+		}
+	}
+
+	/**
+	 * A Spring {@link Converter} to support returning {@link CompletableFuture} instances from repository methods.
+	 *
+	 * @author Oliver Gierke
+	 */
+	private static class NullableWrapperToCompletableFutureConverter extends AbstractWrapperTypeConverter {
+
+		/**
+		 * Creates a new {@link NullableWrapperToCompletableFutureConverter} using the given {@link ConversionService}.
+		 */
+		NullableWrapperToCompletableFutureConverter() {
+			super(CompletableFuture.completedFuture(null), List.of(Future.class));
+		}
+
+		@Override
+		protected Object wrap(Object source) {
+			return source instanceof CompletableFuture ? source : CompletableFuture.completedFuture(source);
+		}
+
+		static WrapperType getWrapperType() {
+			return WrapperType.singleValue(CompletableFuture.class);
+		}
+	}
+
+	private static class IterableToStreamableConverter implements ConditionalGenericConverter {
+
+		private static final TypeDescriptor STREAMABLE = TypeDescriptor.valueOf(Streamable.class);
+
+		private final Map<TypeDescriptor, Boolean> targetTypeCache = new ConcurrentHashMap<>();
+		private final ConversionService conversionService = DefaultConversionService.getSharedInstance();
+
+		IterableToStreamableConverter() {}
+
+		@Override
+		public Set<ConvertiblePair> getConvertibleTypes() {
+			return Collections.singleton(new ConvertiblePair(Iterable.class, Object.class));
+		}
+
+		@Override
+		public boolean matches(TypeDescriptor sourceType, TypeDescriptor targetType) {
+
+			if (sourceType.isAssignableTo(targetType)) {
+				return false;
+			}
+
+			if (!Iterable.class.isAssignableFrom(sourceType.getType())) {
+				return false;
+			}
+
+			if (Streamable.class.equals(targetType.getType())) {
+				return true;
+			}
+
+			return targetTypeCache.computeIfAbsent(targetType, it -> {
+				return conversionService.canConvert(STREAMABLE, targetType);
+			});
+		}
+
+		@SuppressWarnings("unchecked")
+		@Nullable
+		@Override
+		public Object convert(@Nullable Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+
+			Streamable<Object> streamable = source == null //
+					? Streamable.empty() //
+					: Streamable.of(Iterable.class.cast(source));
+
+			return Streamable.class.equals(targetType.getType()) //
+					? streamable //
+					: conversionService.convert(streamable, STREAMABLE, targetType);
+		}
+	}
+
+	public static final class WrapperType {
+
+		private WrapperType(Class<?> type, Cardinality cardinality) {
+			this.type = type;
+			this.cardinality = cardinality;
+		}
+
+		public Class<?> getType() {
+			return this.type;
+		}
+
+		public Cardinality getCardinality() {
+			return cardinality;
+		}
+
+		@Override
+		public boolean equals(@Nullable Object o) {
+
+			if (this == o) {
+				return true;
+			}
+
+			if (!(o instanceof WrapperType that)) {
+				return false;
+			}
+
+			if (!ObjectUtils.nullSafeEquals(type, that.type)) {
+				return false;
+			}
+
+			return cardinality == that.cardinality;
+		}
+
+		@Override
+		public int hashCode() {
+			int result = ObjectUtils.nullSafeHashCode(type);
+			result = 31 * result + ObjectUtils.nullSafeHashCode(cardinality);
+			return result;
+		}
+
+		@Override
+		public String toString() {
+			return "QueryExecutionConverters.WrapperType(type=" + this.getType() + ", cardinality=" + this.getCardinality()
+					+ ")";
+		}
+
+		enum Cardinality {
+			NONE, SINGLE, MULTI;
+		}
+
+		private final Class<?> type;
+		private final Cardinality cardinality;
+
+		public static WrapperType singleValue(Class<?> type) {
+			return new WrapperType(type, Cardinality.SINGLE);
+		}
+
+		public static WrapperType multiValue(Class<?> type) {
+			return new WrapperType(type, Cardinality.MULTI);
+		}
+
+		public static WrapperType noValue(Class<?> type) {
+			return new WrapperType(type, Cardinality.NONE);
+		}
+
+		boolean isSingleValue() {
+			return cardinality.equals(Cardinality.SINGLE);
+		}
+	}
+}
