@@ -99,7 +99,6 @@ public class MirageRepositoryFactory extends RepositoryFactorySupport {
 			String name = repositoryInterface.getSimpleName() + ".sql";
 			repos.setBaseSelectSqlResource(DefaultMirageRepository.newSqlResource(repositoryInterface, name));
 		} catch (NoSuchSqlResourceException e) {
-		    logger.error(e.getMessage(), e);
 			logger.debug("Repository Default SQL [{}] not found, default used.", repositoryInterface);
 		}
 		return repos;

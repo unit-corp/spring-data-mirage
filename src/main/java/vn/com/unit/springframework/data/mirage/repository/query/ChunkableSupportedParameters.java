@@ -16,11 +16,10 @@
 package vn.com.unit.springframework.data.mirage.repository.query;
 
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import org.springframework.core.MethodParameter;
-import org.springframework.data.repository.query.DefaultParameters;
 import org.springframework.data.repository.query.Parameters;
 
 import vn.com.unit.sparwings.spring.data.chunk.Chunkable;
@@ -35,59 +34,79 @@ import vn.com.unit.sparwings.spring.data.chunk.Chunkable;
 public class ChunkableSupportedParameters
 		extends Parameters<ChunkableSupportedParameters, ChunkableSupportedParameter> {
 	
-	private int chunkableIndex;
-	
-	
-	/**
-	 * Creates a new {@link DefaultParameters} instance from the given {@link Method}.
-	 * 
-	 * @param method must not be {@literal null}.
-	 */
-	public ChunkableSupportedParameters(Method method) {
-		super(method);
-		List<Class<?>> types = Arrays.asList(method.getParameterTypes());
-		chunkableIndex = types.indexOf(Chunkable.class);
-	}
-	
-	private ChunkableSupportedParameters(List<ChunkableSupportedParameter> originals) {
-		super(originals);
-		
-		int chunkableIndexTemp = -1;
-		
-		for (int i = 0; i < originals.size(); i++) {
-			ChunkableSupportedParameter original = originals.get(i);
-			chunkableIndexTemp = original.isChunkable() ? i : -1;
-		}
-		
-		chunkableIndex = chunkableIndexTemp;
-	}
-	
-	/**
-	 * Returns the index of the {@link Chunkable} {@link Method} parameter if available. Will return {@literal -1} if there
-	 * is no {@link Chunkable} argument in the {@link Method}'s parameter list.
-	 * 
-	 * @return the pageableIndex
-	 */
-	public int getChunkableIndex() {
-		return chunkableIndex;
-	}
-	
-	/**
-	 * Returns whether the method the {@link Parameters} was created for contains a {@link Chunkable} argument.
-	 * 
-	 * @return
-	 */
-	public boolean hasChunkableParameter() {
-		return chunkableIndex != -1;
-	}
-	
-	@Override
-	protected ChunkableSupportedParameters createFrom(List<ChunkableSupportedParameter> parameters) {
-		return new ChunkableSupportedParameters(parameters);
-	}
-	
-	@Override
-	protected ChunkableSupportedParameter createParameter(MethodParameter parameter) {
-		return new ChunkableSupportedParameter(parameter);
-	}
+    private final int chunkableIndex;
+
+    /**
+     * Creates a new {@link ChunkableSupportedParameters} instance from the given {@link Method}.
+     *
+     * @param method must not be {@literal null}.
+     */
+    public ChunkableSupportedParameters(Method method) {
+        super(initializeParameters(method));
+        this.chunkableIndex = findChunkableIndex(method);
+    }
+    private static List<ChunkableSupportedParameter> initializeParameters(Method method) {
+        return IntStream.range(0, method.getParameterCount())
+                .mapToObj(i -> new ChunkableSupportedParameter(new MethodParameter(method, i)))
+                .toList();
+    }
+    private ChunkableSupportedParameters(List<ChunkableSupportedParameter> originals) {
+        super(originals);
+        this.chunkableIndex = findChunkableIndex(originals);
+    }
+
+    /**
+     * Returns the index of the {@link Chunkable} {@link Method} parameter if available. Will return {@literal -1} if there
+     * is no {@link Chunkable} argument in the {@link Method}'s parameter list.
+     *
+     * @return the index of the {@link Chunkable} parameter, or -1 if not present.
+     */
+    public int getChunkableIndex() {
+        return chunkableIndex;
+    }
+
+    /**
+     * Returns whether the method the {@link Parameters} was created for contains a {@link Chunkable} argument.
+     *
+     * @return {@code true} if a {@link Chunkable} parameter exists, {@code false} otherwise.
+     */
+    public boolean hasChunkableParameter() {
+        return chunkableIndex != -1;
+    }
+
+    @Override
+    protected ChunkableSupportedParameters createFrom(List<ChunkableSupportedParameter> parameters) {
+        return new ChunkableSupportedParameters(parameters);
+    }
+
+    protected ChunkableSupportedParameter createParameter(MethodParameter parameter) {
+        return new ChunkableSupportedParameter(parameter);
+    }
+
+    /**
+     * Finds the index of the {@link Chunkable} parameter in the given {@link Method}.
+     *
+     * @param method the method to inspect.
+     * @return the index of the {@link Chunkable} parameter, or -1 if not present.
+     */
+    private static int findChunkableIndex(Method method) {
+        List<Class<?>> parameterTypes = List.of(method.getParameterTypes());
+        return IntStream.range(0, parameterTypes.size())
+                .filter(i -> Chunkable.class.isAssignableFrom(parameterTypes.get(i)))
+                .findFirst()
+                .orElse(-1);
+    }
+
+    /**
+     * Finds the index of the {@link Chunkable} parameter in the given list of parameters.
+     *
+     * @param parameters the list of {@link ChunkableSupportedParameter}.
+     * @return the index of the {@link Chunkable} parameter, or -1 if not present.
+     */
+    private static int findChunkableIndex(List<ChunkableSupportedParameter> parameters) {
+        return IntStream.range(0, parameters.size())
+                .filter(i -> parameters.get(i).isChunkable())
+                .findFirst()
+                .orElse(-1);
+    }
 }
