@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package jp.xet.springframework.data.mirage.repository;
+package vn.com.unit.springframework.data.mirage.repository;
 
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -23,24 +23,24 @@ import static org.hamcrest.Matchers.not;
 
 import java.util.Arrays;
 
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.repository.core.support.RepositoryFactorySupport;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
 import com.google.common.collect.Iterables;
-import com.miragesql.miragesql.SqlManager;
 
-import jp.xet.springframework.data.mirage.repository.support.MirageRepositoryFactory;
+import vn.com.unit.miragesql.miragesql.SqlManager;
+import vn.com.unit.springframework.data.mirage.repository.example.User;
+import vn.com.unit.springframework.data.mirage.repository.example.UserRepository;
+import vn.com.unit.springframework.data.mirage.repository.support.MirageRepositoryFactory;
 
-import jp.xet.springframework.data.mirage.repository.example.User;
-import jp.xet.springframework.data.mirage.repository.example.UserRepository;
-
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
+@SpringBootTest
 @ContextConfiguration(classes = TestConfiguration.class)
 @Transactional
 @SuppressWarnings("javadoc")

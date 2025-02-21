@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package jp.xet.springframework.data.mirage.repository;
+package vn.com.unit.springframework.data.mirage.repository;
 
 import javax.sql.DataSource;
 
@@ -25,17 +25,16 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import com.miragesql.miragesql.SqlManager;
-import com.miragesql.miragesql.SqlManagerImpl;
-import com.miragesql.miragesql.bean.BeanDescFactory;
-import com.miragesql.miragesql.bean.FieldPropertyExtractor;
-import com.miragesql.miragesql.dialect.MySQLDialect;
-import com.miragesql.miragesql.integration.spring.SpringConnectionProvider;
-import com.miragesql.miragesql.naming.RailsLikeNameConverter;
-import com.miragesql.miragesql.provider.ConnectionProvider;
-
-import jp.xet.springframework.data.mirage.repository.config.EnableMirageRepositories;
-import jp.xet.springframework.data.mirage.repository.support.MiragePersistenceExceptionTranslator;
+import vn.com.unit.miragesql.miragesql.SqlManager;
+import vn.com.unit.miragesql.miragesql.SqlManagerImpl;
+import vn.com.unit.miragesql.miragesql.bean.BeanDescFactory;
+import vn.com.unit.miragesql.miragesql.bean.FieldPropertyExtractor;
+import vn.com.unit.miragesql.miragesql.dialect.MySQLDialect;
+import vn.com.unit.miragesql.miragesql.integration.spring.SpringConnectionProvider;
+import vn.com.unit.miragesql.miragesql.naming.RailsLikeNameConverter;
+import vn.com.unit.miragesql.miragesql.provider.ConnectionProvider;
+import vn.com.unit.springframework.data.mirage.repository.config.EnableMirageRepositories;
+import vn.com.unit.springframework.data.mirage.repository.support.MiragePersistenceExceptionTranslator;
 
 /**
  * Test Configuration

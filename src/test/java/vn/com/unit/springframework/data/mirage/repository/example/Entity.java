@@ -13,18 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package jp.xet.springframework.data.mirage.repository.example;
+package vn.com.unit.springframework.data.mirage.repository.example;
 
 import java.io.Serializable;
 
 import org.springframework.data.annotation.Id;
 
-import com.miragesql.miragesql.annotation.Column;
-import com.miragesql.miragesql.annotation.PrimaryKey;
-import com.miragesql.miragesql.annotation.PrimaryKey.GenerationType;
-import com.miragesql.miragesql.annotation.Table;
-
-import jp.xet.springframework.data.mirage.repository.Identifiable;
+import vn.com.unit.miragesql.miragesql.annotation.Column;
+import vn.com.unit.miragesql.miragesql.annotation.PrimaryKey;
+import vn.com.unit.miragesql.miragesql.annotation.PrimaryKey.GenerationType;
+import vn.com.unit.miragesql.miragesql.annotation.Table;
+import vn.com.unit.springframework.data.mirage.repository.Identifiable;
 
 /**
  * Sample entity class.

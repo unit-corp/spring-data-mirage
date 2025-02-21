@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package jp.xet.springframework.data.mirage.repository.example;
+package vn.com.unit.springframework.data.mirage.repository.example;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -24,10 +24,10 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
+import vn.com.unit.springframework.data.mirage.repository.TestConfiguration;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import jp.xet.springframework.data.mirage.repository.TestConfiguration;
 
 /**
  * Test for {@link UserRepository}.
