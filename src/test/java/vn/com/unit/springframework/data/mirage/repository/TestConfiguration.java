@@ -43,47 +43,44 @@ import vn.com.unit.springframework.data.mirage.repository.support.MiragePersiste
 @EnableTransactionManagement
 @EnableMirageRepositories
 public class TestConfiguration {
-	
-	@Bean
-	public SqlManager sqlManager() {
-		SqlManagerImpl sqlManagerImpl = new SqlManagerImpl();
-		sqlManagerImpl.setConnectionProvider(connectionProvider());
-		sqlManagerImpl.setDialect(new MySQLDialect());
-		sqlManagerImpl.setBeanDescFactory(beanDescFactory());
-		sqlManagerImpl.setNameConverter(new RailsLikeNameConverter());
-		return sqlManagerImpl;
-	}
-	
-	@Bean
-	public ConnectionProvider connectionProvider() {
-		SpringConnectionProvider springConnectionProvider = new SpringConnectionProvider();
-		springConnectionProvider.setDataSource(dataSource());
-		return springConnectionProvider;
-	}
-	
-	@Bean
-	public BeanDescFactory beanDescFactory() {
-		BeanDescFactory beanDescFactory = new BeanDescFactory();
-		beanDescFactory.setPropertyExtractor(new FieldPropertyExtractor());
-		return beanDescFactory;
-	}
-	
-	@Bean
-	public MiragePersistenceExceptionTranslator persistenceExceptionTranslator() {
-		return new MiragePersistenceExceptionTranslator();
-	}
-	
-	@Bean
-	public DataSource dataSource() {
-		return new EmbeddedDatabaseBuilder()
-			.setType(EmbeddedDatabaseType.H2)
-			.addScripts("classpath:create.sql")
-			.setName("test")
-			.build();
-	}
-	
-	@Bean
-	public PlatformTransactionManager transactionManager() {
-		return new DataSourceTransactionManager(dataSource());
-	}
+
+    @Bean
+    SqlManager sqlManager() {
+        SqlManagerImpl sqlManagerImpl = new SqlManagerImpl();
+        sqlManagerImpl.setConnectionProvider(connectionProvider());
+        sqlManagerImpl.setDialect(new MySQLDialect());
+        sqlManagerImpl.setBeanDescFactory(beanDescFactory());
+        sqlManagerImpl.setNameConverter(new RailsLikeNameConverter());
+        return sqlManagerImpl;
+    }
+
+    @Bean
+    ConnectionProvider connectionProvider() {
+        SpringConnectionProvider springConnectionProvider = new SpringConnectionProvider();
+        springConnectionProvider.setDataSource(dataSource());
+        return springConnectionProvider;
+    }
+
+    @Bean
+    BeanDescFactory beanDescFactory() {
+        BeanDescFactory beanDescFactory = new BeanDescFactory();
+        beanDescFactory.setPropertyExtractor(new FieldPropertyExtractor());
+        return beanDescFactory;
+    }
+
+    @Bean
+    MiragePersistenceExceptionTranslator persistenceExceptionTranslator() {
+        return new MiragePersistenceExceptionTranslator();
+    }
+
+    @Bean
+    DataSource dataSource() {
+        return new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2).addScripts("classpath:create.sql")
+                .setName("test").build();
+    }
+
+    @Bean
+    PlatformTransactionManager transactionManager() {
+        return new DataSourceTransactionManager(dataSource());
+    }
 }

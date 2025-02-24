@@ -17,43 +17,40 @@ package vn.com.unit.springframework.data.mirage.repository.example;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import vn.com.unit.springframework.data.mirage.repository.TestConfiguration;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
 
 /**
  * Test for {@link UserRepository}.
  * 
  * @author daisuke
  */
-@RunWith(SpringRunner.class)
+@SpringBootTest
 @ContextConfiguration(classes = TestConfiguration.class)
 @Transactional
-@SuppressWarnings("javadoc")
 public class UserRepositoryTest {
-	
-	@Autowired
-	UserRepository repos;
-	
-	
-	@Test
-	public void test() {
-		assertThat(repos, is(notNullValue()));
-		assertThat(repos.count(), is(0L));
-		repos.save(new User("foo", "foopass"));
-		assertThat(repos.count(), is(1L));
-		repos.save(new User("bar", "barpass"));
-		assertThat(repos.count(), is(2L));
-		
-		User foundFoo = repos.findOne("foo");
-		assertThat(foundFoo.getPassword(), is("foopass"));
-	}
+
+    @Autowired
+    UserRepository repos;
+
+    @Test
+    public void test() {
+        assertThat(repos, is(notNullValue()));
+        assertThat(repos.count(), is(0L));
+        repos.save(new User("foo", "foopass"));
+        assertThat(repos.count(), is(1L));
+        repos.save(new User("bar", "barpass"));
+        assertThat(repos.count(), is(2L));
+
+        User foundFoo = repos.findOne("foo");
+        assertThat(foundFoo.getPassword(), is("foopass"));
+    }
+
 }
