@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package jp.xet.springframework.data.mirage.repository.example;
+package vn.com.unit.springframework.data.mirage.repository.example;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -25,6 +25,11 @@ import static org.junit.Assert.assertThat;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Ignore;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -36,20 +41,12 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
 import com.google.common.collect.Iterables;
 
-import jp.xet.sparwings.spring.data.chunk.Chunk;
-import jp.xet.sparwings.spring.data.chunk.ChunkRequest;
-import jp.xet.sparwings.spring.data.chunk.Chunkable;
-
-import jp.xet.springframework.data.mirage.repository.TestConfiguration;
+import vn.com.unit.sparwings.spring.data.chunk.Chunk;
+import vn.com.unit.sparwings.spring.data.chunk.ChunkRequest;
+import vn.com.unit.sparwings.spring.data.chunk.Chunkable;
+import vn.com.unit.springframework.data.mirage.repository.TestConfiguration;
 
 /**
  * Test for {@link EntityRepository}.
@@ -336,7 +333,7 @@ public class EntityRepositoryTest {
 		repo.save(new Entity("bar2"));
 		repo.save(new Entity("bar3"));
 		
-		Page<Entity> page1 = repo.findAll(new PageRequest(1/*zero based*/, 2, Direction.ASC, "str"));
+		Page<Entity> page1 = repo.findAll(PageRequest.of(1/*zero based*/, 2, Direction.ASC, "str"));
 		assertThat(page1.getNumber(), is(1));
 		assertThat(page1.getNumberOfElements(), is(2));
 		assertThat(page1.getTotalElements(), is(7L));
@@ -344,7 +341,7 @@ public class EntityRepositoryTest {
 		assertThat(page1.getContent().get(0).getStr(), is("bar3"));
 		assertThat(page1.getContent().get(1).getStr(), is("foo"));
 		
-		Page<Entity> page2 = repo.findAll(new PageRequest(2/*zero based*/, 2, Direction.ASC, "str"));
+		Page<Entity> page2 = repo.findAll(PageRequest.of(2/*zero based*/, 2, Direction.ASC, "str"));
 		assertThat(page2.getNumber(), is(2));
 		assertThat(page2.getNumberOfElements(), is(2));
 		assertThat(page2.getTotalElements(), is(7L));
