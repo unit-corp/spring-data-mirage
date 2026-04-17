@@ -2,12 +2,12 @@ package vn.com.unit.springframework.data.mirage.repository.support;
 
 import java.lang.reflect.Method;
 
+import org.springframework.data.core.TypeInformation;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.repository.core.support.AnnotationRepositoryMetadata;
 import org.springframework.data.repository.core.support.DefaultRepositoryMetadata;
 import org.springframework.data.repository.util.ReactiveWrapperConverters;
-import org.springframework.data.util.TypeInformation;
 import org.springframework.util.Assert;
 
 public class MirageDefaultRepositoryMetadata extends DefaultRepositoryMetadata {

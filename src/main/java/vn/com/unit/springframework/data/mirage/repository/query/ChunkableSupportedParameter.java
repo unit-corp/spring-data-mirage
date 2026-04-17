@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.core.MethodParameter;
+import org.springframework.data.core.TypeInformation;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.query.Parameter;
@@ -35,20 +36,18 @@ import vn.com.unit.sparwings.spring.data.chunk.Chunkable;
 public class ChunkableSupportedParameter extends Parameter {
 	
 	static final List<Class<?>> TYPES = Arrays.asList(Pageable.class, Sort.class, Chunkable.class);
-	
+
 	private MethodParameter parameter;
-	
-	
+
 	/**
 	 * インスタンスを生成する。
 	 * 
 	 * @param parameter
 	 */
-	public ChunkableSupportedParameter(MethodParameter parameter) {
-		super(parameter);
-		this.parameter = parameter;
+	public ChunkableSupportedParameter(MethodParameter parameter, TypeInformation<?> domainType) {
+		super(parameter, domainType);
 	}
-	
+
 	@Override
 	public boolean isSpecialParameter() {
 		return TYPES.contains(parameter.getParameterType());

@@ -20,23 +20,24 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.GenericConverter;
 import org.springframework.core.convert.support.ConfigurableConversionService;
 import org.springframework.core.convert.support.DefaultConversionService;
+import org.springframework.data.core.CustomCollections;
+import org.springframework.data.core.NullableWrapper;
+import org.springframework.data.core.NullableWrapperConverters;
+import org.springframework.data.core.TypeInformation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Window;
 import org.springframework.data.geo.GeoResults;
-import org.springframework.data.util.CustomCollections;
-import org.springframework.data.util.NullableWrapper;
-import org.springframework.data.util.NullableWrapperConverters;
 import org.springframework.data.util.StreamUtils;
 import org.springframework.data.util.Streamable;
-import org.springframework.data.util.TypeInformation;
 import org.springframework.lang.Nullable;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ConcurrentReferenceHashMap;
 import org.springframework.util.ObjectUtils;
-import org.springframework.util.concurrent.ListenableFuture;
+
+import com.google.common.util.concurrent.ListenableFuture;
 
 /**
  * refer QueryExecutionConverters

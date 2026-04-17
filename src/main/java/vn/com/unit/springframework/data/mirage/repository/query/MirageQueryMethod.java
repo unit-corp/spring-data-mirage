@@ -22,11 +22,11 @@ import java.util.List;
 import java.util.Locale;
 
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.data.core.TypeInformation;
 import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.repository.query.Parameters;
 import org.springframework.data.repository.query.QueryMethod;
-import org.springframework.data.util.TypeInformation;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -67,7 +67,14 @@ public class MirageQueryMethod extends QueryMethod {
 	 * @since 0.1
 	 */
 	public MirageQueryMethod(Method method, RepositoryMetadata metadata, ProjectionFactory factory) {
-		super(method, metadata, factory);
+		 super(method,
+		          metadata,
+		          factory,
+		          source -> new ChunkableSupportedParameters(
+		                  source.getMethod(),
+		                  TypeInformation.of(metadata.getReturnedDomainClass(method))
+		          ));
+
 		this.method = method;
 		this.metadata = metadata;
 		unwrappedReturnType = potentiallyUnwrapReturnTypeFor(method);
@@ -142,10 +149,7 @@ public class MirageQueryMethod extends QueryMethod {
 		return method.getAnnotation(Modifying.class) != null;
 	}
 	
-	@Override
-	protected Parameters<?, ?> createParameters(Method method) {
-		return new ChunkableSupportedParameters(method);
-	}
+
 	
 	/**
 	 * Returns the query string declared in a {@link Query} annotation or {@code null} if neither the annotation found

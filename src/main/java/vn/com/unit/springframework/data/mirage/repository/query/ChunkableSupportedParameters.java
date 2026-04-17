@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 import org.springframework.core.MethodParameter;
+import org.springframework.data.core.TypeInformation;
 import org.springframework.data.repository.query.Parameters;
 
 import vn.com.unit.sparwings.spring.data.chunk.Chunkable;
@@ -35,24 +36,31 @@ public class ChunkableSupportedParameters
 		extends Parameters<ChunkableSupportedParameters, ChunkableSupportedParameter> {
 	
     private final int chunkableIndex;
+    private final TypeInformation<?> domainType;
+    
 
     /**
-     * Creates a new {@link ChunkableSupportedParameters} instance from the given {@link Method}.
-     *
-     * @param method must not be {@literal null}.
-     */
-    public ChunkableSupportedParameters(Method method) {
-        super(initializeParameters(method));
-        this.chunkableIndex = findChunkableIndex(method);
-    }
-    private static List<ChunkableSupportedParameter> initializeParameters(Method method) {
-        return IntStream.range(0, method.getParameterCount())
-                .mapToObj(i -> new ChunkableSupportedParameter(new MethodParameter(method, i)))
-                .toList();
-    }
-    private ChunkableSupportedParameters(List<ChunkableSupportedParameter> originals) {
+	 * Creates a new {@link ChunkableSupportedParameters} instance from the given
+	 * {@link Method}.
+	 *
+	 * @param method must not be {@literal null}.
+	 */
+	public ChunkableSupportedParameters(Method method, TypeInformation<?> domainType) {
+		super(initializeParameters(method, domainType));
+		this.chunkableIndex = findChunkableIndex(method);
+		this.domainType = domainType;
+	}
+
+	private static List<ChunkableSupportedParameter> initializeParameters(Method method,
+			TypeInformation<?> domainType) {
+
+		return IntStream.range(0, method.getParameterCount())
+				.mapToObj(i -> new ChunkableSupportedParameter(new MethodParameter(method, i), domainType)).toList();
+	}
+    private ChunkableSupportedParameters(List<ChunkableSupportedParameter> originals,TypeInformation<?> domainType) {
         super(originals);
         this.chunkableIndex = findChunkableIndex(originals);
+        this.domainType = domainType;
     }
 
     /**
@@ -74,14 +82,14 @@ public class ChunkableSupportedParameters
         return chunkableIndex != -1;
     }
 
-    @Override
-    protected ChunkableSupportedParameters createFrom(List<ChunkableSupportedParameter> parameters) {
-        return new ChunkableSupportedParameters(parameters);
-    }
+	@Override
+	protected ChunkableSupportedParameters createFrom(List<ChunkableSupportedParameter> parameters) {
+		return new ChunkableSupportedParameters(parameters, domainType);
+	}
 
-    protected ChunkableSupportedParameter createParameter(MethodParameter parameter) {
-        return new ChunkableSupportedParameter(parameter);
-    }
+	protected ChunkableSupportedParameter createParameter(MethodParameter parameter) {
+		return new ChunkableSupportedParameter(parameter, domainType);
+	}
 
     /**
      * Finds the index of the {@link Chunkable} parameter in the given {@link Method}.
