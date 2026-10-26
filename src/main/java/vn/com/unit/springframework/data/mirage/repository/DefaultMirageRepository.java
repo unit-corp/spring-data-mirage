@@ -217,19 +217,24 @@ public class DefaultMirageRepository<E, ID extends Serializable> implements Scan
 	}
 	
 	@Override
-	@SuppressWarnings("unchecked")
 	public void delete(Iterable<? extends E> entities) {
 		if (entities == null) {
 			throw new NullPointerException("entities is null"); //$NON-NLS-1$
 		}
+		List<E> toDelete = new ArrayList<E>();
 		for (E entity : entities) {
 			if (entity == null) {
 				throw new NullPointerException("entity is null"); //$NON-NLS-1$
 			}
+			toDelete.add(entity);
 		}
-		
+		if (toDelete.isEmpty()) {
+			return;
+		}
+
 		try {
-			sqlManager.deleteBatch(entities);
+			// pass a List: an Iterable would select the varargs overload and be treated as a single entity
+			sqlManager.deleteBatch(toDelete);
 		} catch (SQLRuntimeException e) {
 			throw getExceptionTranslator().translate("delete", null, e.getCause());
 		}

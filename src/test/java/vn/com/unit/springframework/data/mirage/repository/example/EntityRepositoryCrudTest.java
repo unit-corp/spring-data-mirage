@@ -40,7 +40,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import vn.com.unit.springframework.data.mirage.repository.TestConfiguration;
@@ -106,7 +105,6 @@ public class EntityRepositoryCrudTest {
 	}
 
 	@Test
-	@Disabled("deleteBatch(Iterable) in the current miragesql treats the list as one entity (Primary key is not found); not supported by this library")
 	public void delete_byGroup_removesExactlyThoseRows() {
 		Entity foo = repo.save(new Entity("foo"));
 		Entity bar = repo.save(new Entity("bar"));
@@ -119,7 +117,6 @@ public class EntityRepositoryCrudTest {
 	}
 
 	@Test
-	@Disabled("deleteBatch(Iterable) in the current miragesql treats the list as one entity (Primary key is not found); not supported by this library")
 	public void delete_byEmptyGroup_doesNothing() {
 		repo.save(new Entity("foo"));
 
@@ -129,7 +126,6 @@ public class EntityRepositoryCrudTest {
 	}
 
 	@Test
-	@Disabled("deleteBatch(Iterable) in the current miragesql treats the list as one entity (Primary key is not found); not supported by this library")
 	public void deleteAll_leavesNothing() {
 		repo.save(new Entity("foo"));
 		repo.save(new Entity("bar"));
