@@ -42,40 +42,40 @@ import vn.com.unit.springframework.data.mirage.repository.example.UserRepository
 @Transactional
 @SuppressWarnings("javadoc")
 public class DefaultMirageRepositoryTest {
-	
-	@Autowired
-	SqlManager sqlManager;
-	
-	
-	@Test
-	public void findAll() {
-		RepositoryFactorySupport factory = new MirageRepositoryFactory(sqlManager);
-		UserRepository repos = factory.getRepository(UserRepository.class);
-		
-		repos.save(new User("foo", "foopass"));
-		repos.save(new User("bar", "barpass"));
-		repos.save(new User("baz", "bazpass"));
-		
-		Iterable<User> all = repos.findAll();
-		assertThat("findAll size", Iterables.size(all), is(3));
-		assertThat("findAll", all, hasItem(new User("foo", null)));
-		assertThat("findAll", all, hasItem(new User("bar", null)));
-		assertThat("findAll", all, hasItem(new User("baz", null)));
-	}
-	
-	@Test
-	public void findAll2() {
-		RepositoryFactorySupport factory = new MirageRepositoryFactory(sqlManager);
-		UserRepository repos = factory.getRepository(UserRepository.class);
-		
-		repos.save(new User("foo", "foopass"));
-		repos.save(new User("bar", "barpass"));
-		repos.save(new User("baz", "bazpass"));
-		
-		Iterable<User> all = repos.findAll(Arrays.asList("foo", "baz"));
-		assertThat("findAll size", Iterables.size(all), is(2));
-		assertThat("findAll", all, hasItem(new User("foo", null)));
-		assertThat("findAll", all, not(contains(new User("bar", null))));
-		assertThat("findAll", all, hasItem(new User("baz", null)));
-	}
+    
+    @Autowired
+    SqlManager sqlManager;
+    
+    
+    @Test
+    public void findAll() {
+        RepositoryFactorySupport factory = new MirageRepositoryFactory(sqlManager);
+        UserRepository repos = factory.getRepository(UserRepository.class);
+        
+        repos.save(new User("foo", "foopass"));
+        repos.save(new User("bar", "barpass"));
+        repos.save(new User("baz", "bazpass"));
+        
+        Iterable<User> all = repos.findAll();
+        assertThat("findAll size", Iterables.size(all), is(3));
+        assertThat("findAll", all, hasItem(new User("foo", null)));
+        assertThat("findAll", all, hasItem(new User("bar", null)));
+        assertThat("findAll", all, hasItem(new User("baz", null)));
+    }
+    
+    @Test
+    public void findAll2() {
+        RepositoryFactorySupport factory = new MirageRepositoryFactory(sqlManager);
+        UserRepository repos = factory.getRepository(UserRepository.class);
+        
+        repos.save(new User("foo", "foopass"));
+        repos.save(new User("bar", "barpass"));
+        repos.save(new User("baz", "bazpass"));
+        
+        Iterable<User> all = repos.findAll(Arrays.asList("foo", "baz"));
+        assertThat("findAll size", Iterables.size(all), is(2));
+        assertThat("findAll", all, hasItem(new User("foo", null)));
+        assertThat("findAll", all, not(contains(new User("bar", null))));
+        assertThat("findAll", all, hasItem(new User("baz", null)));
+    }
 }

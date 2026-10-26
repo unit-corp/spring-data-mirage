@@ -36,21 +36,21 @@ import vn.com.unit.springframework.data.mirage.repository.TestConfiguration;
 @Transactional
 @SuppressWarnings("javadoc")
 public class UserRepositoryTest {
-	
-	@Autowired
-	UserRepository repos;
-	
-	
-	@Test
-	public void test() {
-		assertThat(repos, is(notNullValue()));
-		assertThat(repos.count(), is(0L));
-		repos.save(new User("foo", "foopass"));
-		assertThat(repos.count(), is(1L));
-		repos.save(new User("bar", "barpass"));
-		assertThat(repos.count(), is(2L));
-		
-		User foundFoo = repos.findOne("foo");
-		assertThat(foundFoo.getPassword(), is("foopass"));
-	}
+    
+    @Autowired
+    UserRepository repos;
+    
+    
+    @Test
+    public void test() {
+        assertThat(repos, is(notNullValue()));
+        assertThat(repos.count(), is(0L));
+        repos.save(new User("foo", "foopass"));
+        assertThat(repos.count(), is(1L));
+        repos.save(new User("bar", "barpass"));
+        assertThat(repos.count(), is(2L));
+        
+        User foundFoo = repos.findOne("foo");
+        assertThat(foundFoo.getPassword(), is("foopass"));
+    }
 }
