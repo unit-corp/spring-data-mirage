@@ -1,11 +1,10 @@
 # Spring Data Mirage SQL
 
-This project is a fork of [spring-data-mirage](https://github.com/dai0304/spring-data-mirage).
-Modifications have been made by UNIT Technology Corporation in 2025.
+[![Download](https://api.bintray.com/packages/dai0304/maven/spring-data-mirage/images/download.svg)](https://bintray.com/dai0304/maven/spring-data-mirage/_latestVersion)
 
 The primary goal of the [Spring Data](http://www.springsource.org/spring-data) project is to make it easier to build
 Spring-powered applications that use data access technologies. This module deals with enhanced support for
-[Mirage SQL](https://github.com/unit-corp/mirage) based data access layers.
+[Mirage SQL](https://github.com/mirage-sql/mirage) based data access layers.
 
 
 ## Features
@@ -13,17 +12,12 @@ Spring-powered applications that use data access technologies. This module deals
 This project defines a `MirageRepository` base interface:
 
 ```java
-public interface MirageRepository<E, ID extends Serializable> extends ScannableRepository<E, ID>,
-		BatchReadableRepository<E, ID>, BatchWritableRepository<E, ID>, LockableCrudRepository<E, ID>,
-		ChunkableRepository<E, ID>, PageableRepository<E, ID>, TruncatableRepository<E, ID> {
-
-  E findOne(ID id);
-  Iterable<E> findAll();
+public interface MirageRepository<E, ID extends Serializable> extends PagingAndSortingRepository<E, ID> {
+  T findOne(ID id);
+  List<T> findAll();
   boolean exists(ID id);
   long count();
-  <S extends E> S create(S entity);
-  <S extends E> S update(S entity);
-  void delete(ID id);
+  <S extends E>S save(S entity);
   // ...
 }
 ```
@@ -31,28 +25,51 @@ public interface MirageRepository<E, ID extends Serializable> extends ScannableR
 
 ## Requirements
 
-* Java 17+
-* Spring Data Commons 3.x.x
-* Mirage 3.x.x
+* Java 21+
+* Spring Boot 4.1.x (Spring Framework 7, Spring Data Commons 4.1.x)
+* Mirage 4.0.1
+
+
+## Changes
+
+### 4.0.1
+
+* Renamed the artifact from `spring-data-mirage-customize` to `spring-data-mirage`.
+* Built against Spring Boot 4.1.2 / Spring Framework 7 / Spring Data Commons 4.1.
+* Removed support for `ListenableFuture` repository return types (removed in Spring Framework 7). Use `CompletableFuture` instead.
 
 
 ## Quick Start
 
-### Dependency
+### dependency
+
+Add the repository definition to your `pom.xml`:
+
+```xml
+<repositories>
+  <repository>
+    <id>bintray-dai0304-maven</id>
+    <name>bintray-dai0304-maven</name>
+    <url>https://dl.bintray.com/dai0304/maven</url>
+  </repository>
+</repositories>
+```
 
 Add the jar to your maven project :
 
 ```xml
 <dependency>
-  <groupId>vn.com.unit.springframework.data.mirage</groupId>
+  <groupId>jp.xet.springframework.data.mirage</groupId>
   <artifactId>spring-data-mirage</artifactId>
-  <version>3.x.x</version>
+  <version>4.0.1</version>
 </dependency>
 ```
 
+> **Renamed**: this artifact was formerly published as `spring-data-mirage-customize`. Use `spring-data-mirage` from `4.0.1` on.
+
 ### Spring beans configurations
 
-XML Configure your infrastructure:
+Configure your infrastructure:
 
 ```xml
 <bean id="dataSource" ...>
@@ -65,66 +82,28 @@ XML Configure your infrastructure:
 
 <tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="false" />
 
-<bean id="connectionProvider" class="vn.com.unit.miragesql.miragesql.integration.spring.SpringConnectionProvider">
+<bean id="connectionProvider" class="com.miragesql.miragesql.integration.spring.SpringConnectionProvider">
   <property name="transactionManager" ref="transactionManager" />
 </bean>
 
-<bean id="dialect" class="vn.com.unit.miragesql.miragesql.dialect.MySQLDialect" />
-<bean id="railsLikeNameConverter" class="vn.com.unit.miragesql.miragesql.naming.RailsLikeNameConverter" />
+<bean id="dialect" class="com.miragesql.miragesql.dialect.MySQLDialect" />
+<bean id="railsLikeNameConverter" class="com.miragesql.miragesql.naming.RailsLikeNameConverter" />
 
-<bean id="sqlManager" class="vn.com.unit.miragesql.miragesql.SqlManagerImpl" depends-on="fieldPropertyExtractorInitializer">
+<bean id="sqlManager" class="com.miragesql.miragesql.SqlManagerImpl" depends-on="fieldPropertyExtractorInitializer">
   <property name="connectionProvider" ref="connectionProvider" />
   <property name="dialect" ref="dialect" />
   <property name="nameConverter" ref="railsLikeNameConverter" />
   <property name="beanDescFactory">
-    <bean class="vn.com.unit.miragesql.miragesql.bean.BeanDescFactory">
+    <bean class="com.miragesql.miragesql.bean.BeanDescFactory">
       <property name="propertyExtractor">
-        <bean class="vn.com.unit.miragesql.miragesql.bean.FieldPropertyExtractor" />
+        <bean class="com.miragesql.miragesql.bean.FieldPropertyExtractor" />
       </property>
     </bean>
   </property>
   <!-- ... -->
 </bean>
 
-<mirage:repositories base-package="vn.com.unit.example.product.repository" sql-manager-ref="sqlManager" />
-```
-
-
-Java Configure your infrastructure:
-
-```java
-    @Autowired
-    private DataSourceTransactionManager transactionManager;
-
-    @Bean
-    public SqlManager sqlManagerService() {
-
-        // Bridge java.util.logging used by mirage
-        SLF4JBridgeHandler.removeHandlersForRootLogger();
-        SLF4JBridgeHandler.install();
-
-        SqlManager sqlManager = new SqlManagerImpl();
-        sqlManager.setConnectionProvider(connectionProvider());
-        sqlManager.setDialect(new MySQLDialect());
-        sqlManager.setBeanDescFactory(beanDescFactory());
-        sqlManager.setNameConverter(new RailsLikeNameConverter());
-
-        return sqlManager;
-    }
-
-    @Bean
-    public ConnectionProvider connectionProvider() {
-        SpringConnectionProvider springConnectionProvider = new SpringConnectionProvider();
-        springConnectionProvider.setTransactionManager(transactionManager);
-        return springConnectionProvider;
-    }
-
-    @Bean
-    public BeanDescFactory beanDescFactory() {
-        BeanDescFactory beanDescFactory = new BeanDescFactory();
-        beanDescFactory.setPropertyExtractor(new FieldPropertyExtractor());
-        return beanDescFactory;
-    }
+<mirage:repositories base-package="com.example.product.repository" sql-manager-ref="sqlManager" />
 ```
 
 ### Entity classes
@@ -152,7 +131,7 @@ public class User {
 
 ### Repository interfaces
 
-Create a repository interface in `vn.com.unit.example.product.repository`:
+Create a repository interface in `com.example.product.repository`:
 
 ```java
 public interface UserRepository extends MirageRepository<User, Long> {
