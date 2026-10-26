@@ -26,6 +26,7 @@ import vn.com.unit.sparwings.spring.data.repository.PageableRepository;
 import vn.com.unit.sparwings.spring.data.repository.ScannableRepository;
 import vn.com.unit.sparwings.spring.data.repository.UpsertableRepository;
 import vn.com.unit.sparwings.spring.data.repository.WritableRepository;
+
 import vn.com.unit.springframework.data.mirage.repository.query.StaticParam;
 
 /**

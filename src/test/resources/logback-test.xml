@@ -16,9 +16,9 @@
   </appender>
 
   <logger name="org.springframework" level="INFO" />
-  <logger name="jp.xet.springframework.data.mirage" level="DEBUG" />
+  <logger name="vn.com.unit.springframework.data.mirage" level="DEBUG" />
 
-  <logger name="com.miragesql.miragesql" level="WARN" />
+  <logger name="vn.com.unit.miragesql.miragesql" level="WARN" />
 
   <logger name="jdbc" level="WARN" />
   <logger name="jdbc.sqltiming" level="INFO" />

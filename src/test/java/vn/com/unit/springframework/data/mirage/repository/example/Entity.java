@@ -23,6 +23,7 @@ import vn.com.unit.miragesql.miragesql.annotation.Column;
 import vn.com.unit.miragesql.miragesql.annotation.PrimaryKey;
 import vn.com.unit.miragesql.miragesql.annotation.PrimaryKey.GenerationType;
 import vn.com.unit.miragesql.miragesql.annotation.Table;
+
 import vn.com.unit.springframework.data.mirage.repository.Identifiable;
 
 /**
