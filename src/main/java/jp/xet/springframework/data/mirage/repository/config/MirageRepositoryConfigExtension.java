@@ -40,7 +40,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.w3c.dom.Element;
 
-import jp.xet.sparwings.spring.data.repository.ScannableRepository;
+import vn.com.unit.sparwings.spring.data.repository.ScannableRepository;
 import jp.xet.springframework.data.mirage.repository.support.MirageDefaultRepositoryMetadata;
 import jp.xet.springframework.data.mirage.repository.support.MirageRepositoryFactoryBean;
 

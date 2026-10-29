@@ -15,9 +15,9 @@
  */
 package jp.xet.springframework.data.mirage.repository.example;
 
-import jp.xet.sparwings.spring.data.repository.BatchReadableRepository;
-import jp.xet.sparwings.spring.data.repository.ScannableRepository;
-import jp.xet.sparwings.spring.data.repository.UpsertableRepository;
+import vn.com.unit.sparwings.spring.data.repository.BatchReadableRepository;
+import vn.com.unit.sparwings.spring.data.repository.ScannableRepository;
+import vn.com.unit.sparwings.spring.data.repository.UpsertableRepository;
 
 /**
  * Repository interface for {@link Entity}.

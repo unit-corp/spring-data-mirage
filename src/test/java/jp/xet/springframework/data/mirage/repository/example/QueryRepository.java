@@ -22,9 +22,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param;
 
-import jp.xet.sparwings.spring.data.chunk.Chunk;
-import jp.xet.sparwings.spring.data.chunk.Chunkable;
-import jp.xet.sparwings.spring.data.repository.ScannableRepository;
+import vn.com.unit.sparwings.spring.data.chunk.Chunk;
+import vn.com.unit.sparwings.spring.data.chunk.Chunkable;
+import vn.com.unit.sparwings.spring.data.repository.ScannableRepository;
 
 import jp.xet.springframework.data.mirage.repository.query.Modifying;
 import jp.xet.springframework.data.mirage.repository.query.StaticParam;

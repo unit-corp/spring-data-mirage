@@ -57,19 +57,19 @@ import com.miragesql.miragesql.naming.NameConverter;
 import com.miragesql.miragesql.util.MirageUtil;
 import com.miragesql.miragesql.util.Validate;
 
-import jp.xet.sparwings.spring.data.chunk.Chunk;
-import jp.xet.sparwings.spring.data.chunk.ChunkImpl;
-import jp.xet.sparwings.spring.data.chunk.Chunkable;
-import jp.xet.sparwings.spring.data.chunk.Chunkable.PaginationRelation;
-import jp.xet.sparwings.spring.data.chunk.PaginationTokenEncoder;
-import jp.xet.sparwings.spring.data.chunk.SimplePaginationTokenEncoder;
-import jp.xet.sparwings.spring.data.repository.BatchReadableRepository;
-import jp.xet.sparwings.spring.data.repository.BatchWritableRepository;
-import jp.xet.sparwings.spring.data.repository.ChunkableRepository;
-import jp.xet.sparwings.spring.data.repository.LockableCrudRepository;
-import jp.xet.sparwings.spring.data.repository.PageableRepository;
-import jp.xet.sparwings.spring.data.repository.ScannableRepository;
-import jp.xet.sparwings.spring.data.repository.TruncatableRepository;
+import vn.com.unit.sparwings.spring.data.chunk.Chunk;
+import vn.com.unit.sparwings.spring.data.chunk.ChunkImpl;
+import vn.com.unit.sparwings.spring.data.chunk.Chunkable;
+import vn.com.unit.sparwings.spring.data.chunk.Chunkable.PaginationRelation;
+import vn.com.unit.sparwings.spring.data.chunk.PaginationTokenEncoder;
+import vn.com.unit.sparwings.spring.data.chunk.SimplePaginationTokenEncoder;
+import vn.com.unit.sparwings.spring.data.repository.BatchReadableRepository;
+import vn.com.unit.sparwings.spring.data.repository.BatchWritableRepository;
+import vn.com.unit.sparwings.spring.data.repository.ChunkableRepository;
+import vn.com.unit.sparwings.spring.data.repository.LockableCrudRepository;
+import vn.com.unit.sparwings.spring.data.repository.PageableRepository;
+import vn.com.unit.sparwings.spring.data.repository.ScannableRepository;
+import vn.com.unit.sparwings.spring.data.repository.TruncatableRepository;
 
 /**
  * Mirage SQLを利用した repository 実装クラス。

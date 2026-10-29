@@ -204,3 +204,13 @@ nbdist/
 .idea/
 
 *.iml
+
+### Signing keys / publishing secrets (never commit) ###
+*.asc
+*.gpg
+*.key
+*.pgp
+secring.*
+
+### VS Code ###
+.vscode/

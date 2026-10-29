@@ -15,11 +15,11 @@
  */
 package jp.xet.springframework.data.mirage.repository.example;
 
-import jp.xet.sparwings.spring.data.repository.BatchReadableRepository;
-import jp.xet.sparwings.spring.data.repository.BatchWritableRepository;
-import jp.xet.sparwings.spring.data.repository.LockableCrudRepository;
-import jp.xet.sparwings.spring.data.repository.ScannableRepository;
-import jp.xet.sparwings.spring.data.repository.TruncatableRepository;
+import vn.com.unit.sparwings.spring.data.repository.BatchReadableRepository;
+import vn.com.unit.sparwings.spring.data.repository.BatchWritableRepository;
+import vn.com.unit.sparwings.spring.data.repository.LockableCrudRepository;
+import vn.com.unit.sparwings.spring.data.repository.ScannableRepository;
+import vn.com.unit.sparwings.spring.data.repository.TruncatableRepository;
 
 /**
  * Repository interface for {@link User} that exposes create, delete and lock-option operations, which

@@ -19,9 +19,9 @@ import java.io.Serializable;
 
 import org.springframework.data.repository.NoRepositoryBean;
 
-import jp.xet.sparwings.spring.data.repository.BatchReadableRepository;
-import jp.xet.sparwings.spring.data.repository.BatchWritableRepository;
-import jp.xet.sparwings.spring.data.repository.ScannableRepository;
+import vn.com.unit.sparwings.spring.data.repository.BatchReadableRepository;
+import vn.com.unit.sparwings.spring.data.repository.BatchWritableRepository;
+import vn.com.unit.sparwings.spring.data.repository.ScannableRepository;
 
 /**
  * TODO

@@ -17,7 +17,7 @@ package jp.xet.springframework.data.mirage.extra;
 
 import java.util.List;
 
-import jp.xet.sparwings.spring.data.repository.ScannableRepository;
+import vn.com.unit.sparwings.spring.data.repository.ScannableRepository;
 
 import jp.xet.springframework.data.mirage.repository.example.Entity;
 

@@ -22,7 +22,7 @@ import java.util.stream.IntStream;
 import org.springframework.core.MethodParameter;
 import org.springframework.data.repository.query.Parameters;
 
-import jp.xet.sparwings.spring.data.chunk.Chunkable;
+import vn.com.unit.sparwings.spring.data.chunk.Chunkable;
 
 /**
  * Handles method parameters for repositories supporting {@link Chunkable}.

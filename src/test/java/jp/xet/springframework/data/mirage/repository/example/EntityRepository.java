@@ -19,13 +19,13 @@ import java.util.List;
 
 import org.springframework.data.repository.query.Param;
 
-import jp.xet.sparwings.spring.data.chunk.Chunk;
-import jp.xet.sparwings.spring.data.chunk.Chunkable;
-import jp.xet.sparwings.spring.data.repository.ChunkableRepository;
-import jp.xet.sparwings.spring.data.repository.PageableRepository;
-import jp.xet.sparwings.spring.data.repository.ScannableRepository;
-import jp.xet.sparwings.spring.data.repository.UpsertableRepository;
-import jp.xet.sparwings.spring.data.repository.WritableRepository;
+import vn.com.unit.sparwings.spring.data.chunk.Chunk;
+import vn.com.unit.sparwings.spring.data.chunk.Chunkable;
+import vn.com.unit.sparwings.spring.data.repository.ChunkableRepository;
+import vn.com.unit.sparwings.spring.data.repository.PageableRepository;
+import vn.com.unit.sparwings.spring.data.repository.ScannableRepository;
+import vn.com.unit.sparwings.spring.data.repository.UpsertableRepository;
+import vn.com.unit.sparwings.spring.data.repository.WritableRepository;
 
 import jp.xet.springframework.data.mirage.repository.query.StaticParam;
 

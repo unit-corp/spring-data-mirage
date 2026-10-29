@@ -24,7 +24,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.query.Parameter;
 
-import jp.xet.sparwings.spring.data.chunk.Chunkable;
+import vn.com.unit.sparwings.spring.data.chunk.Chunkable;
 
 /**
  * TODO for daisuke

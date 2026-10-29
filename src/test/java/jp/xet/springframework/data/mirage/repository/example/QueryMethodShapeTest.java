@@ -38,8 +38,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import org.junit.jupiter.api.Test;
 
-import jp.xet.sparwings.spring.data.chunk.Chunk;
-import jp.xet.sparwings.spring.data.chunk.ChunkRequest;
+import vn.com.unit.sparwings.spring.data.chunk.Chunk;
+import vn.com.unit.sparwings.spring.data.chunk.ChunkRequest;
 
 import jp.xet.springframework.data.mirage.repository.TestConfiguration;
 

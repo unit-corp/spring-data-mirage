@@ -1,10 +1,17 @@
-# Spring Data Mirage SQL
+# Spring Data Mirage (legacy)
 
-[![Download](https://api.bintray.com/packages/dai0304/maven/spring-data-mirage/images/download.svg)](https://bintray.com/dai0304/maven/spring-data-mirage/_latestVersion)
+[![Maven Central](https://img.shields.io/maven-central/v/vn.com.unit.springframework.data.mirage/spring-data-mirage-legacy)](https://central.sonatype.com/artifact/vn.com.unit.springframework.data.mirage/spring-data-mirage-legacy)
+
+> **Maintenance only.** This is the legacy line of Spring Data Mirage, maintained by UNIT Technology Corporation
+> for applications that still use the original `jp.xet.springframework.data.mirage` package. New features go to the
+> current line. See [Migration](#migration).
 
 The primary goal of the [Spring Data](http://www.springsource.org/spring-data) project is to make it easier to build
 Spring-powered applications that use data access technologies. This module deals with enhanced support for
 [Mirage SQL](https://github.com/mirage-sql/mirage) based data access layers.
+
+This is a fork of [spring-data-mirage](https://github.com/dai0304/spring-data-mirage) maintained by UNIT Technology
+Corporation since 2025.
 
 
 ## Features
@@ -25,16 +32,21 @@ public interface MirageRepository<E, ID extends Serializable> extends PagingAndS
 
 ## Requirements
 
-* Java 21+
+* Java 17+
 * Spring Boot 4.1.x (Spring Framework 7, Spring Data Commons 4.1.x)
 * Mirage 4.0.1
 
 
 ## Changes
 
+See [CHANGELOG.md](CHANGELOG.md) for the release lines and the legacy-line changes. Release notes of this line:
+
 ### 4.0.1
 
-* Renamed the artifact from `spring-data-mirage-customize` to `spring-data-mirage`.
+* Published as the legacy line: groupId `vn.com.unit.springframework.data.mirage`, artifactId `spring-data-mirage-legacy` (formerly `spring-data-mirage-customize`, then `spring-data-mirage`).
+* Spar Wings moved from `jp.xet.sparwings` to `vn.com.unit.sparwings` (groupId `vn.com.unit.spar-wings`); **update your imports** (`Chunk`, `ChunkRequest`, `BatchReadableRepository`, ...). See [Migration](#migration).
+* Mirage-SQL dependency is now `vn.com.unit.miragesql:miragesql-legacy` / `miragesql-integration-legacy`.
+* Minimum Java version is 17.
 * Built against Spring Boot 4.1.2 / Spring Framework 7 / Spring Data Commons 4.1.
 * Removed support for `ListenableFuture` repository return types (removed in Spring Framework 7). Use `CompletableFuture` instead.
 
@@ -43,29 +55,25 @@ public interface MirageRepository<E, ID extends Serializable> extends PagingAndS
 
 ### dependency
 
-Add the repository definition to your `pom.xml`:
-
-```xml
-<repositories>
-  <repository>
-    <id>bintray-dai0304-maven</id>
-    <name>bintray-dai0304-maven</name>
-    <url>https://dl.bintray.com/dai0304/maven</url>
-  </repository>
-</repositories>
-```
-
 Add the jar to your maven project :
 
 ```xml
 <dependency>
-  <groupId>jp.xet.springframework.data.mirage</groupId>
-  <artifactId>spring-data-mirage</artifactId>
+  <groupId>vn.com.unit.springframework.data.mirage</groupId>
+  <artifactId>spring-data-mirage-legacy</artifactId>
   <version>4.0.1</version>
 </dependency>
 ```
 
-> **Renamed**: this artifact was formerly published as `spring-data-mirage-customize`. Use `spring-data-mirage` from `4.0.1` on.
+Gradle:
+
+```groovy
+implementation 'vn.com.unit.springframework.data.mirage:spring-data-mirage-legacy:4.0.1'
+```
+
+> The package of this library is unchanged (`jp.xet.springframework.data.mirage`), but the Spar Wings types it exposes
+> (`Chunk`, `ChunkRequest`, `BatchReadableRepository`, ...) moved from `jp.xet.sparwings` to `vn.com.unit.sparwings`;
+> see [Migration](#migration). The Mirage-SQL dependency is `vn.com.unit.miragesql:miragesql-legacy`.
 
 ### Spring beans configurations
 
@@ -275,3 +283,81 @@ You can use multiple `@StaticParam` annotations by using `@StaticParams` annotat
 List<User> findXxx();
 ```
 
+
+
+## Building from source
+
+* JDK 17 or later, Maven 3.9+
+* `mvn clean install`
+* Publishing to Maven Central: `mvn clean deploy -Pcentral-publishing -DskipTests` (needs a GPG key and a Central
+  token in `~/.m2/settings.xml`; never commit them)
+
+
+## Migration
+
+| | Original | Legacy (this line) | Current |
+|---|---|---|---|
+| groupId | `jp.xet.springframework.data.mirage` | `vn.com.unit.springframework.data.mirage` | `vn.com.unit.springframework.data.mirage` |
+| artifactId | `spring-data-mirage` | `spring-data-mirage-legacy` | `spring-data-mirage` |
+| Java package | `jp.xet.springframework.data.mirage` | unchanged | renamed to the new package `vn.com.unit.springframework.data.mirage` |
+| Spar Wings groupId | `jp.xet.spar-wings` | `vn.com.unit.spar-wings` | `vn.com.unit.spar-wings` |
+| Spar Wings package | `jp.xet.sparwings` | **`vn.com.unit.sparwings`** | `vn.com.unit.sparwings` |
+| Mirage-SQL | `com.miragesql:miragesql` | `vn.com.unit.miragesql:miragesql-legacy` | `vn.com.unit.miragesql:miragesql` |
+
+From the original to the legacy line:
+
+1. Change the dependency groupId to `vn.com.unit.springframework.data.mirage` and add `-legacy` to the artifactId.
+2. Change the Spar Wings and Mirage-SQL dependencies as in the table above.
+3. Replace the Spar Wings package in your sources, for example:
+
+   ```
+   import jp.xet.sparwings.spring.data.chunk.Chunk;        ->  import vn.com.unit.sparwings.spring.data.chunk.Chunk;
+   import jp.xet.sparwings.spring.data.chunk.ChunkRequest;  ->  import vn.com.unit.sparwings.spring.data.chunk.ChunkRequest;
+   ```
+
+   A project-wide find and replace of `jp.xet.sparwings` with `vn.com.unit.sparwings` is enough.
+4. Imports and configuration of this library (`jp.xet.springframework.data.mirage`) stay as they are.
+
+Recommended: move to the current line (new package, artifactId without the suffix).
+
+### From the legacy line (4.0.x) to the current line (4.1+)
+
+Both lines are built against Spring Boot 4.1 / Java 17, and the public API is the same. What changes is coordinates and
+packages:
+
+| | Legacy (4.0.x) | Current (4.1+) |
+|---|---|---|
+| artifactId | `spring-data-mirage-legacy` | `spring-data-mirage` |
+| Library package | `jp.xet.springframework.data.mirage` | `vn.com.unit.springframework.data.mirage` |
+| Mirage-SQL artifacts | `miragesql-legacy`, `miragesql-integration-legacy` | `miragesql`, `miragesql-integration` |
+| Mirage-SQL package | `com.miragesql.miragesql` | `vn.com.unit.miragesql.miragesql` |
+| Spar Wings | `vn.com.unit.sparwings` | `vn.com.unit.sparwings` (unchanged) |
+| XML namespace | `http://www.springframework.org/schema/data/mirage` | unchanged |
+
+1. Change the dependency artifactId to `spring-data-mirage` (groupId stays `vn.com.unit.springframework.data.mirage`).
+2. If you declare Mirage-SQL yourself, drop the `-legacy` suffix from `miragesql-legacy` and
+   `miragesql-integration-legacy`.
+3. Replace the packages in your sources and Spring configuration (XML and Java config), for example:
+
+   ```
+   jp.xet.springframework.data.mirage   ->  vn.com.unit.springframework.data.mirage
+   com.miragesql.miragesql              ->  vn.com.unit.miragesql.miragesql
+   ```
+
+   This includes class names in bean definitions such as `SpringConnectionProvider`, `SqlManagerImpl`,
+   `MySQLDialect` and `RailsLikeNameConverter`.
+4. Keep SQL files next to their repository interfaces: when you move the interfaces to a new package, move the
+   `.sql` files with them.
+5. `<mirage:repositories>` and its namespace URI stay as they are; only `base-package` and class names change.
+
+
+## Links
+
+* Fork repository: <https://github.com/unit-corp/spring-data-mirage>
+* Upstream project: <https://github.com/dai0304/spring-data-mirage>
+* [CHANGELOG.md](CHANGELOG.md)
+
+
+## License
+
+Apache License 2.0, see [LICENSE](LICENSE) and [NOTICE](NOTICE).

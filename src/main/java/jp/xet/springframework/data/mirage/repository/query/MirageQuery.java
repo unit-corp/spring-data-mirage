@@ -51,11 +51,11 @@ import com.miragesql.miragesql.SqlManager;
 import com.miragesql.miragesql.SqlResource;
 import com.miragesql.miragesql.StringSqlResource;
 
-import jp.xet.sparwings.spring.data.chunk.ChunkImpl;
-import jp.xet.sparwings.spring.data.chunk.Chunkable;
-import jp.xet.sparwings.spring.data.chunk.Chunkable.PaginationRelation;
-import jp.xet.sparwings.spring.data.chunk.PaginationTokenEncoder;
-import jp.xet.sparwings.spring.data.chunk.SimplePaginationTokenEncoder;
+import vn.com.unit.sparwings.spring.data.chunk.ChunkImpl;
+import vn.com.unit.sparwings.spring.data.chunk.Chunkable;
+import vn.com.unit.sparwings.spring.data.chunk.Chunkable.PaginationRelation;
+import vn.com.unit.sparwings.spring.data.chunk.PaginationTokenEncoder;
+import vn.com.unit.sparwings.spring.data.chunk.SimplePaginationTokenEncoder;
 
 import jp.xet.springframework.data.mirage.repository.ScopeClasspathSqlResource;
 import jp.xet.springframework.data.mirage.repository.SqlResourceCandidate;

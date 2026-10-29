@@ -31,7 +31,7 @@ import org.springframework.data.core.TypeInformation;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
-import jp.xet.sparwings.spring.data.chunk.Chunk;
+import vn.com.unit.sparwings.spring.data.chunk.Chunk;
 import jp.xet.springframework.data.mirage.repository.support.MirageQueryExecutionConverters;
 
 /**
