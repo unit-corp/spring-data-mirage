@@ -1,11 +1,13 @@
-# Spring Data Mirage SQL
+# Spring Data Mirage
 
-This project is a fork of [spring-data-mirage](https://github.com/dai0304/spring-data-mirage).
-Modifications have been made by UNIT Technology Corporation in 2025.
+[![Maven Central](https://img.shields.io/maven-central/v/vn.com.unit.springframework.data.mirage/spring-data-mirage)](https://central.sonatype.com/artifact/vn.com.unit.springframework.data.mirage/spring-data-mirage)
 
 The primary goal of the [Spring Data](http://www.springsource.org/spring-data) project is to make it easier to build
 Spring-powered applications that use data access technologies. This module deals with enhanced support for
-[Mirage SQL](https://github.com/unit-corp/mirage) based data access layers.
+[Mirage SQL](https://github.com/mirage-sql/mirage) based data access layers.
+
+This is a fork of [spring-data-mirage](https://github.com/dai0304/spring-data-mirage) maintained by UNIT Technology
+Corporation since 2025.
 
 
 ## Features
@@ -13,17 +15,12 @@ Spring-powered applications that use data access technologies. This module deals
 This project defines a `MirageRepository` base interface:
 
 ```java
-public interface MirageRepository<E, ID extends Serializable> extends ScannableRepository<E, ID>,
-		BatchReadableRepository<E, ID>, BatchWritableRepository<E, ID>, LockableCrudRepository<E, ID>,
-		ChunkableRepository<E, ID>, PageableRepository<E, ID>, TruncatableRepository<E, ID> {
-
-  E findOne(ID id);
-  Iterable<E> findAll();
+public interface MirageRepository<E, ID extends Serializable> extends PagingAndSortingRepository<E, ID> {
+  T findOne(ID id);
+  List<T> findAll();
   boolean exists(ID id);
   long count();
-  <S extends E> S create(S entity);
-  <S extends E> S update(S entity);
-  void delete(ID id);
+  <S extends E>S save(S entity);
   // ...
 }
 ```
@@ -32,13 +29,28 @@ public interface MirageRepository<E, ID extends Serializable> extends ScannableR
 ## Requirements
 
 * Java 17+
-* Spring Data Commons 3.x.x
-* Mirage 3.x.x
+* Spring Boot 4.1.x (Spring Framework 7, Spring Data Commons 4.1.x)
+* Mirage SQL 4.1.1 (`vn.com.unit.miragesql`)
+
+
+## Changes
+
+See [CHANGELOG.md](CHANGELOG.md) for the release lines and all release notes. Release notes of this line:
+
+### 4.1.1
+
+* Current line: groupId `vn.com.unit.springframework.data.mirage`, artifactId `spring-data-mirage`, Java package `vn.com.unit.springframework.data.mirage`.
+* Mirage-SQL types now come from the package `vn.com.unit.miragesql.miragesql`; Spar Wings from `vn.com.unit.sparwings`.
+* Built against Spring Boot 4.1.2 / Spring Framework 7 / Spring Data Commons 4.1; Guava 33.7.2-jre to fix known CVEs.
+* Minimum Java version is 17.
+* Maven Central publishing setup (sources, javadoc, GPG signing) and Apache 2.0 `LICENSE` / `NOTICE` added.
+
+To move from the legacy line (4.0.x, `spring-data-mirage-legacy`), see [Migration](#migration).
 
 
 ## Quick Start
 
-### Dependency
+### dependency
 
 Add the jar to your maven project :
 
@@ -46,13 +58,23 @@ Add the jar to your maven project :
 <dependency>
   <groupId>vn.com.unit.springframework.data.mirage</groupId>
   <artifactId>spring-data-mirage</artifactId>
-  <version>3.x.x</version>
+  <version>4.1.1</version>
 </dependency>
 ```
 
+Gradle:
+
+```groovy
+implementation 'vn.com.unit.springframework.data.mirage:spring-data-mirage:4.1.1'
+```
+
+> The Java package of this library is `vn.com.unit.springframework.data.mirage`. Mirage SQL types live in
+> `vn.com.unit.miragesql.miragesql` and are pulled in transitively (`vn.com.unit.miragesql:miragesql` and
+> `miragesql-integration` 4.1.1); the chunk support comes from `vn.com.unit.sparwings`.
+
 ### Spring beans configurations
 
-XML Configure your infrastructure:
+Configure your infrastructure:
 
 ```xml
 <bean id="dataSource" ...>
@@ -86,45 +108,7 @@ XML Configure your infrastructure:
   <!-- ... -->
 </bean>
 
-<mirage:repositories base-package="vn.com.unit.example.product.repository" sql-manager-ref="sqlManager" />
-```
-
-
-Java Configure your infrastructure:
-
-```java
-    @Autowired
-    private DataSourceTransactionManager transactionManager;
-
-    @Bean
-    public SqlManager sqlManagerService() {
-
-        // Bridge java.util.logging used by mirage
-        SLF4JBridgeHandler.removeHandlersForRootLogger();
-        SLF4JBridgeHandler.install();
-
-        SqlManager sqlManager = new SqlManagerImpl();
-        sqlManager.setConnectionProvider(connectionProvider());
-        sqlManager.setDialect(new MySQLDialect());
-        sqlManager.setBeanDescFactory(beanDescFactory());
-        sqlManager.setNameConverter(new RailsLikeNameConverter());
-
-        return sqlManager;
-    }
-
-    @Bean
-    public ConnectionProvider connectionProvider() {
-        SpringConnectionProvider springConnectionProvider = new SpringConnectionProvider();
-        springConnectionProvider.setTransactionManager(transactionManager);
-        return springConnectionProvider;
-    }
-
-    @Bean
-    public BeanDescFactory beanDescFactory() {
-        BeanDescFactory beanDescFactory = new BeanDescFactory();
-        beanDescFactory.setPropertyExtractor(new FieldPropertyExtractor());
-        return beanDescFactory;
-    }
+<mirage:repositories base-package="com.example.product.repository" sql-manager-ref="sqlManager" />
 ```
 
 ### Entity classes
@@ -152,7 +136,7 @@ public class User {
 
 ### Repository interfaces
 
-Create a repository interface in `vn.com.unit.example.product.repository`:
+Create a repository interface in `com.example.product.repository`:
 
 ```java
 public interface UserRepository extends MirageRepository<User, Long> {
@@ -296,3 +280,62 @@ You can use multiple `@StaticParam` annotations by using `@StaticParams` annotat
 List<User> findXxx();
 ```
 
+
+
+## Building from source
+
+* JDK 17 or later, Maven 3.9+
+* `mvn clean install`
+* Publishing to Maven Central: `mvn clean deploy -Pcentral-publishing -DskipTests` (needs a GPG key and a Central
+  token in `~/.m2/settings.xml`; never commit them)
+
+
+## Migration
+
+| | Original | Legacy (4.0.x) | Current (4.1+, this line) |
+|---|---|---|---|
+| groupId | `jp.xet.springframework.data.mirage` | `vn.com.unit.springframework.data.mirage` | `vn.com.unit.springframework.data.mirage` |
+| artifactId | `spring-data-mirage` | `spring-data-mirage-legacy` | `spring-data-mirage` |
+| Library package | `jp.xet.springframework.data.mirage` | `jp.xet.springframework.data.mirage` | `vn.com.unit.springframework.data.mirage` |
+| Spar Wings package | `jp.xet.sparwings` | `vn.com.unit.sparwings` | `vn.com.unit.sparwings` |
+| Mirage-SQL package | `com.miragesql.miragesql` | `com.miragesql.miragesql` | `vn.com.unit.miragesql.miragesql` |
+
+### From the legacy line (4.0.x) to this line (4.1+)
+
+Both lines are built against Spring Boot 4.1 / Java 17 and the public API is the same. What changes is coordinates and
+packages:
+
+1. Change the dependency artifactId from `spring-data-mirage-legacy` to `spring-data-mirage` (groupId stays
+   `vn.com.unit.springframework.data.mirage`).
+2. If you declare Mirage-SQL yourself, drop the `-legacy` suffix from `miragesql-legacy` and
+   `miragesql-integration-legacy`.
+3. Replace the packages in your sources and Spring configuration (XML and Java config), for example:
+
+   ```
+   jp.xet.springframework.data.mirage   ->  vn.com.unit.springframework.data.mirage
+   com.miragesql.miragesql              ->  vn.com.unit.miragesql.miragesql
+   ```
+
+   This includes class names in bean definitions such as `SpringConnectionProvider`, `SqlManagerImpl`,
+   `MySQLDialect` and `RailsLikeNameConverter`.
+4. Keep SQL files next to their repository interfaces: when you move the interfaces to a new package, move the
+   `.sql` files with them.
+5. `<mirage:repositories>` and its namespace URI (`http://www.springframework.org/schema/data/mirage`) stay as they
+   are; only `base-package` and class names change.
+
+### From the original (`jp.xet`) project
+
+Change the dependency to `vn.com.unit.springframework.data.mirage:spring-data-mirage`, then apply the package
+replacements in the table above (library, Spar Wings and Mirage-SQL packages).
+
+
+## Links
+
+* Fork repository: <https://github.com/unit-corp/spring-data-mirage>
+* Upstream project: <https://github.com/dai0304/spring-data-mirage>
+* [CHANGELOG.md](CHANGELOG.md)
+
+
+## License
+
+Apache License 2.0, see [LICENSE](LICENSE) and [NOTICE](NOTICE).
