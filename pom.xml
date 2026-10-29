@@ -197,12 +197,13 @@
 						<failOnNoGitDirectory>false</failOnNoGitDirectory>
 						<abbrevLength>8</abbrevLength>
 						<gitDescribe>
-							<skip>true</skip>
+							<skip>false</skip>
 						</gitDescribe>
 						<includeOnlyProperties>
 							<includeOnlyProperty>^git.branch$</includeOnlyProperty>
 							<includeOnlyProperty>^git.commit.id.abbrev$</includeOnlyProperty>
 							<includeOnlyProperty>^git.commit.time$</includeOnlyProperty>
+							<includeOnlyProperty>^git.closest.tag.name$</includeOnlyProperty>
 						</includeOnlyProperties>
 					</configuration>
 				</plugin>
