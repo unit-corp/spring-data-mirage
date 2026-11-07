@@ -370,6 +370,15 @@ public class DefaultMirageRepository<E, ID extends Serializable> implements Scan
 		return null;
 	}
 	
+	/**
+	 * Returns true if the entity has an id and a row with that id already exists. An entity without id (e.g. one whose
+	 * primary key is generated on insert, like {@code GenerationType.UUID_V7}) is always treated as new.
+	 */
+	private boolean isExisting(E entity) {
+		ID id = getId(entity);
+		return id != null && exists(id, true);
+	}
+	
 	@Override
 	public <S extends E> Iterable<S> save(Iterable<S> entities) {
 		if (entities == null) {
@@ -382,7 +391,7 @@ public class DefaultMirageRepository<E, ID extends Serializable> implements Scan
 			while (iterator.hasNext()) {
 				E entity = iterator.next();
 				if (entity != null) {
-					if (exists(getId(entity), true)) {
+					if (isExisting(entity)) {
 						toUpdate.add(entity);
 					} else {
 						toInsert.add(entity);
@@ -403,7 +412,7 @@ public class DefaultMirageRepository<E, ID extends Serializable> implements Scan
 			return null;
 		}
 		try {
-			if (exists(getId(entity), true)) {
+			if (isExisting(entity)) {
 				sqlManager.updateEntity(entity);
 				log.debug("entity updated: {}", entity);
 			} else {
