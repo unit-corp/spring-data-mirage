@@ -22,14 +22,12 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
@@ -92,14 +90,15 @@ public class QueryMethodShapeTest {
 	}
 
 	@Test
-	public void singleEntity_severalMatches_raisesIncorrectResultSize() {
+	public void singleEntity_severalMatches_returnsFirstMatch() {
 		seed("dup", "dup");
 
-		IncorrectResultSizeDataAccessException e =
-				assertThrows(IncorrectResultSizeDataAccessException.class, () -> queries.findOneByStr("dup"));
+		// MirageQuery delegates to SqlManager#getSingleResult, which returns the first row instead of raising
+		// IncorrectResultSizeDataAccessException
+		Entity found = queries.findOneByStr("dup");
 
-		assertThat(e.getActualSize(), is(2));
-		assertThat(e.getExpectedSize(), is(1));
+		assertThat(found, is(notNullValue()));
+		assertThat(found.getStr(), is("dup"));
 	}
 
 	// ---- optional ----

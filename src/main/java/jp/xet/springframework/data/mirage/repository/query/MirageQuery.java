@@ -31,7 +31,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -44,13 +45,9 @@ import org.springframework.data.repository.query.QueryMethod;
 import org.springframework.data.repository.query.RepositoryQuery;
 import org.springframework.util.Assert;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.miragesql.miragesql.SqlManager;
 import com.miragesql.miragesql.SqlResource;
 import com.miragesql.miragesql.StringSqlResource;
-
 import vn.com.unit.sparwings.spring.data.chunk.ChunkImpl;
 import vn.com.unit.sparwings.spring.data.chunk.Chunkable;
 import vn.com.unit.sparwings.spring.data.chunk.Chunkable.PaginationRelation;
@@ -200,11 +197,7 @@ public class MirageQuery implements RepositoryQuery {
 		} else if (mirageQueryMethod.isPageQuery()) {
 			return processPageQuery(sqlResource, parameterMap, returnedDomainType, accessor);
 		} else {
-			List<?> resultList = sqlManager.getResultList(returnedDomainType, sqlResource, parameterMap);
-			if (resultList.size() > 1) {
-				throw new IncorrectResultSizeDataAccessException(1, resultList.size());
-			}
-			return resultList.isEmpty() ? null : resultList.get(0);
+			return sqlManager.getSingleResult(returnedDomainType, sqlResource, parameterMap);
 		}
 	}
 	

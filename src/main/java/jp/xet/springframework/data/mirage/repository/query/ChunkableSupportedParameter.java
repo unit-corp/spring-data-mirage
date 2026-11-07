@@ -36,20 +36,19 @@ import vn.com.unit.sparwings.spring.data.chunk.Chunkable;
 public class ChunkableSupportedParameter extends Parameter {
 	
 	static final List<Class<?>> TYPES = Arrays.asList(Pageable.class, Sort.class, Chunkable.class);
-	
+
 	private MethodParameter parameter;
-	
-	
+
 	/**
 	 * インスタンスを生成する。
 	 * 
 	 * @param parameter
 	 */
-	public ChunkableSupportedParameter(MethodParameter parameter) {
-		super(parameter, TypeInformation.of(Object.class));
+	public ChunkableSupportedParameter(MethodParameter parameter, TypeInformation<?> domainType) {
+		super(parameter, domainType);
 		this.parameter = parameter;
 	}
-	
+
 	@Override
 	public boolean isSpecialParameter() {
 		return TYPES.contains(parameter.getParameterType());

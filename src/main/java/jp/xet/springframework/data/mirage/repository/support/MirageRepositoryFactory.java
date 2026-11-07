@@ -18,18 +18,16 @@ package jp.xet.springframework.data.mirage.repository.support;
 import java.io.Serializable;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.repository.core.EntityInformation;
 import org.springframework.data.repository.core.RepositoryInformation;
 import org.springframework.data.repository.core.RepositoryMetadata;
-import org.springframework.data.repository.core.support.AbstractRepositoryMetadata;
 import org.springframework.data.repository.core.support.RepositoryFactorySupport;
 import org.springframework.data.repository.query.QueryLookupStrategy;
 import org.springframework.data.repository.query.QueryLookupStrategy.Key;
 import org.springframework.data.repository.query.ValueExpressionDelegate;
 import org.springframework.util.Assert;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.miragesql.miragesql.SqlManager;
 

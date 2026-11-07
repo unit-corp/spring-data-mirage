@@ -29,6 +29,8 @@ import java.util.Optional;
 
 import javax.sql.DataSource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.data.annotation.Id;
@@ -44,9 +46,6 @@ import org.springframework.jdbc.support.SQLExceptionTranslator;
 import org.springframework.jdbc.support.SQLStateSQLExceptionTranslator;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.util.Assert;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.miragesql.miragesql.IterationCallback;
 import com.miragesql.miragesql.SqlManager;
