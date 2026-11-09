@@ -1,8 +1,6 @@
 name: CI Release
 
-# Release tag (legacy-v4.1.0 or v4.1.0) -> deploy to Maven Central.
-# The steps live in the shared ci-templates-public repository, which rejects any other tag.
-# TODO: deploy branch builds (-SNAPSHOT) to the internal Nexus later.
+# Maven deploy on release tags. The steps live in the shared ci-templates-public repository.
 on:
   push:
     tags:
