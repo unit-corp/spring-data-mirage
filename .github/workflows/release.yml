@@ -1,0 +1,17 @@
+name: CI Release
+
+# Release tag (legacy-v4.1.0 or v4.1.0) -> deploy to Maven Central.
+# The steps live in the shared ci-templates-public repository, which rejects any other tag.
+# TODO: deploy branch builds (-SNAPSHOT) to the internal Nexus later.
+on:
+  push:
+    tags:
+      - "legacy-v[0-9]+.[0-9]+.[0-9]+*"
+      - "v[0-9]+.[0-9]+.[0-9]+*"
+
+jobs:
+  release:
+    uses: unit-corp/ci-templates-public/.github/workflows/trigger-maven-central-release.yml@main
+    with:
+      tag_prefixes: "legacy-v v"
+      snapshot_url: ${{ vars.MAVEN_SNAPSHOT_URL }}
