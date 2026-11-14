@@ -1,0 +1,24 @@
+name: CI Release and Snapshot
+
+# Maven deploy on release tags and snapshot branches. The steps live in the shared ci-templates-public repository.
+on:
+  push:
+    branches:
+      - "develop"
+
+      # Standard artifacts
+      - "maintenance/[0-9]+.x"
+      - "maintenance/[0-9]+.[0-9]+.x"
+      - "maintenance/[0-9]+.[0-9]+.[0-9]+"
+
+      # Legacy artifacts
+      - "maintenance/legacy/[0-9]+.x"
+      - "maintenance/legacy/[0-9]+.[0-9]+.x"
+      - "maintenance/legacy/[0-9]+.[0-9]+.[0-9]+"
+    tags:
+      - "legacy-v[0-9]+.[0-9]+.[0-9]+*"
+      - "v[0-9]+.[0-9]+.[0-9]+*"
+
+jobs:
+  release:
+    uses: unit-corp/ci-templates-public/.github/workflows/trigger-maven-central-release.yml@main

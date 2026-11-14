@@ -93,7 +93,8 @@ public class QueryMethodShapeTest {
 	public void singleEntity_severalMatches_returnsFirstMatch() {
 		seed("dup", "dup");
 
-		// the library does not raise IncorrectResultSizeDataAccessException here; it returns the first row
+		// MirageQuery delegates to SqlManager#getSingleResult, which returns the first row instead of raising
+		// IncorrectResultSizeDataAccessException
 		Entity found = queries.findOneByStr("dup");
 
 		assertThat(found, is(notNullValue()));
@@ -166,7 +167,7 @@ public class QueryMethodShapeTest {
 
 		chunk = queries.findChunkByStrStartsWith("b", chunk.nextChunkable());
 		assertThat(chunk.getContent().isEmpty(), is(true));
-		assertThat(chunk.getPaginationToken(), is(notNullValue()));
+		assertThat(chunk.getPaginationToken(), is(nullValue()));
 
 		assertThat(seen, contains("bar", "bar2", "bar3", "baz"));
 	}

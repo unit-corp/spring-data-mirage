@@ -46,6 +46,7 @@ public class ChunkableSupportedParameter extends Parameter {
 	 */
 	public ChunkableSupportedParameter(MethodParameter parameter, TypeInformation<?> domainType) {
 		super(parameter, domainType);
+		this.parameter = parameter;
 	}
 
 	@Override

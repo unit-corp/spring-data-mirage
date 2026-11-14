@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>4.1.2</version>
-        <relativePath /> <!-- lookup parent from repository -->
-    </parent>
-    <groupId>vn.com.unit.springframework.data.mirage</groupId>
-    <artifactId>spring-data-mirage</artifactId>
-    <version>4.1.1</version>
-    <name>Spring Data Mirage</name>
+<project child.project.url.inherit.append.path="false" xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>4.1.2</version>
+		<relativePath /> <!-- lookup parent from repository -->
+	</parent>
+	<groupId>vn.com.unit.springframework.data.mirage</groupId>
+	<artifactId>spring-data-mirage</artifactId>
+	<version>5.0.0</version>
+	<name>Spring Data Mirage</name>
 	<description>Spring Data module to provide sophisticated support for Mirage
 		SQL repositories (2-way-SQL based query methods, paging and chunking,
 		auditing). Maintained by UNIT Technology Corporation as a fork of
 		dai0304/spring-data-mirage. It uses the package
 		"vn.com.unit.springframework.data.mirage", requires Java 17+ and is built
 		against Spring Boot 4 (Spring Framework 7, Spring Data Commons 4.1) and
-		Mirage SQL 4.1.1.</description>
+		Mirage SQL 5.x.</description>
 	<url>https://github.com/unit-corp/spring-data-mirage</url>
 	<organization>
 		<name>UNIT Technology Corporation</name>
@@ -75,7 +75,7 @@
 
 		<guava.version>33.7.2-jre</guava.version>
 		<vavr.version>1.1.0</vavr.version>
-		<mirage.version>4.1.1</mirage.version>
+		<mirage.version>5.1.0-SNAPSHOT</mirage.version>
 		<spar-wings-spring-data-chunk.version>1.0.0</spar-wings-spring-data-chunk.version>
 		<maven-deploy-plugin.version>3.2.0</maven-deploy-plugin.version>
 		<maven-source-plugin.version>3.4.0</maven-source-plugin.version>
@@ -128,7 +128,7 @@
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 			<version>${guava.version}</version>
-			<scope>compile</scope>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -138,6 +138,11 @@
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-aspects</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

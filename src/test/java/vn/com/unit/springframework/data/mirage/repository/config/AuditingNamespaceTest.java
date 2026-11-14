@@ -20,7 +20,6 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.springframework.beans.factory.BeanDefinitionStoreException;
-import org.springframework.beans.factory.parsing.BeanDefinitionParsingException;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.ClassPathResource;
@@ -56,21 +55,19 @@ public class AuditingNamespaceTest {
 	}
 
 	/**
-	 * Without schema validation the namespace handler is reached; it needs spring-aspects, which is not a
-	 * dependency of this module, so it reports a configuration problem instead of registering the aspect.
+	 * Without schema validation the namespace handler is reached and registers the bean configurer aspect.
 	 */
 	@Test
-	public void auditingElement_isRejected_whenSpringAspectsIsNotOnTheClasspath() {
+	public void auditingElement_registersTheBeanConfigurerAspect_whenSchemaValidationIsOff() {
 		GenericApplicationContext context = new GenericApplicationContext();
 		try {
 			XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(context);
 			reader.setValidationMode(XmlBeanDefinitionReader.VALIDATION_NONE);
 			reader.setNamespaceAware(true);
 
-			assertThrows(BeanDefinitionParsingException.class,
-					() -> reader.loadBeanDefinitions(new ClassPathResource(XML)));
+			reader.loadBeanDefinitions(new ClassPathResource(XML));
 
-			assertThat(context.containsBeanDefinition(ASPECT_BEAN_NAME), is(false));
+			assertThat(context.containsBeanDefinition(ASPECT_BEAN_NAME), is(true));
 		} finally {
 			context.close();
 		}

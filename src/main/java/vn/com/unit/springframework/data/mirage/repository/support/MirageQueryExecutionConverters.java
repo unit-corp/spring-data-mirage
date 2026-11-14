@@ -20,24 +20,22 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.GenericConverter;
 import org.springframework.core.convert.support.ConfigurableConversionService;
 import org.springframework.core.convert.support.DefaultConversionService;
-import org.springframework.data.core.CustomCollections;
-import org.springframework.data.core.NullableWrapper;
-import org.springframework.data.core.NullableWrapperConverters;
-import org.springframework.data.core.TypeInformation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Window;
 import org.springframework.data.geo.GeoResults;
+import org.springframework.data.repository.util.QueryExecutionConverters;
+import org.springframework.data.core.CustomCollections;
+import org.springframework.data.core.NullableWrapper;
+import org.springframework.data.core.NullableWrapperConverters;
 import org.springframework.data.util.StreamUtils;
 import org.springframework.data.util.Streamable;
+import org.springframework.data.core.TypeInformation;
 import org.springframework.lang.Nullable;
-import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ConcurrentReferenceHashMap;
 import org.springframework.util.ObjectUtils;
-
-import com.google.common.util.concurrent.ListenableFuture;
 
 /**
  * refer QueryExecutionConverters
@@ -58,9 +56,7 @@ public abstract class MirageQueryExecutionConverters   {
 
 		WRAPPER_TYPES.add(WrapperType.singleValue(Future.class));
 		UNWRAPPER_TYPES.add(WrapperType.singleValue(Future.class));
-		WRAPPER_TYPES.add(WrapperType.singleValue(ListenableFuture.class));
 		WRAPPER_TYPES.add(WrapperType.singleValue(CompletableFuture.class));
-		UNWRAPPER_TYPES.add(WrapperType.singleValue(ListenableFuture.class));
 		UNWRAPPER_TYPES.add(WrapperType.singleValue(CompletableFuture.class));
 
 		ALLOWED_PAGEABLE_TYPES.add(Slice.class);
@@ -171,7 +167,6 @@ public abstract class MirageQueryExecutionConverters   {
 		CustomCollections.registerConvertersIn(conversionService);
 
 		conversionService.addConverter(new NullableWrapperToCompletableFutureConverter());
-		conversionService.addConverter(new NullableWrapperToFutureConverter());
 		conversionService.addConverter(new IterableToStreamableConverter());
 	}
 
@@ -321,27 +316,6 @@ public abstract class MirageQueryExecutionConverters   {
 		 * @return must not be {@literal null}.
 		 */
 		protected abstract Object wrap(Object source);
-	}
-
-	/**
-	 * A Spring {@link Converter} to support returning {@link Future} instances from repository methods.
-	 *
-	 * @author Oliver Gierke
-	 */
-	@Deprecated(since = "3.0")
-	private static class NullableWrapperToFutureConverter extends AbstractWrapperTypeConverter {
-
-		/**
-		 * Creates a new {@link NullableWrapperToFutureConverter} using the given {@link ConversionService}.
-		 */
-		NullableWrapperToFutureConverter() {
-			super(new AsyncResult<>(null), List.of(ListenableFuture.class));
-		}
-
-		@Override
-		protected Object wrap(Object source) {
-			return new AsyncResult<>(source);
-		}
 	}
 
 	/**

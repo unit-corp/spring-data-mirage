@@ -51,10 +51,11 @@ import vn.com.unit.miragesql.miragesql.StringSqlResource;
 import vn.com.unit.sparwings.spring.data.chunk.ChunkImpl;
 import vn.com.unit.sparwings.spring.data.chunk.Chunkable;
 import vn.com.unit.sparwings.spring.data.chunk.Chunkable.PaginationRelation;
-import vn.com.unit.springframework.data.mirage.repository.ScopeClasspathSqlResource;
-import vn.com.unit.springframework.data.mirage.repository.SqlResourceCandidate;
 import vn.com.unit.sparwings.spring.data.chunk.PaginationTokenEncoder;
 import vn.com.unit.sparwings.spring.data.chunk.SimplePaginationTokenEncoder;
+
+import vn.com.unit.springframework.data.mirage.repository.ScopeClasspathSqlResource;
+import vn.com.unit.springframework.data.mirage.repository.SqlResourceCandidate;
 
 /**
  * {@link RepositoryQuery} implementation for spring-data-mirage.
@@ -349,6 +350,11 @@ public class MirageQuery implements RepositoryQuery {
 			return resultList;
 		}
 		
+		if (resultList.isEmpty()) {
+			// No more items: there is no key to continue from (same as DefaultMirageRepository#findAll(Chunkable)).
+			return new ChunkImpl<>(resultList, null, chunkable);
+		}
+
 		String firstKey = Objects
 			.toString(getId((chunkable == null || chunkable.getPaginationToken() == null || resultList.isEmpty()) ? null
 					: resultList.get(0)));
