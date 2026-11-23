@@ -7,3 +7,8 @@ CREATE TABLE users (
 	username VARCHAR(64) PRIMARY KEY,
 	password VARCHAR(64) NOT NULL
 );
+
+CREATE TABLE uuid_items (
+	id BINARY(16) PRIMARY KEY,
+	name VARCHAR(64) NOT NULL
+);

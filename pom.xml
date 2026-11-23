@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>vn.com.unit.springframework.data.mirage</groupId>
 	<artifactId>spring-data-mirage</artifactId>
-	<version>5.0.0</version>
+	<version>5.1.0-SNAPSHOT</version>
 	<name>Spring Data Mirage</name>
 	<description>Spring Data integration for Mirage SQL, simplifying the development
 		of Spring-powered applications with Mirage SQL-based data access
@@ -77,15 +77,9 @@
 		<maven-surefire-plugin.version>3.6.1</maven-surefire-plugin.version>
 		<gmavenplus-plugin.version>5.1.0</gmavenplus-plugin.version>
 
-		<vavr.version>1.1.0</vavr.version>
-		<mirage.version>5.0.0</mirage.version>
 		<spar-wings-spring-data-chunk.version>1.0.0</spar-wings-spring-data-chunk.version>
-		<maven-deploy-plugin.version>3.2.0</maven-deploy-plugin.version>
-		<maven-source-plugin.version>3.4.0</maven-source-plugin.version>
-		<maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
-		<maven-gpg-plugin.version>3.2.8</maven-gpg-plugin.version>
-		<central-publishing-maven-plugin.version>0.12.0</central-publishing-maven-plugin.version>
-		<git-commit-id-maven-plugin.version>9.2.0</git-commit-id-maven-plugin.version>
+		<mirage.version>5.1.0-SNAPSHOT</mirage.version>
+		<vavr.version>1.1.0</vavr.version>
 	</properties>
 
 	<dependencyManagement>
