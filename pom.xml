@@ -3,23 +3,15 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>4.1.2</version>
-		<relativePath /> <!-- lookup parent from repository -->
-	</parent>
 	<groupId>vn.com.unit.springframework.data.mirage</groupId>
 	<artifactId>spring-data-mirage</artifactId>
 	<version>5.0.0</version>
 	<name>Spring Data Mirage</name>
-	<description>Spring Data module to provide sophisticated support for Mirage
-		SQL repositories (2-way-SQL based query methods, paging and chunking,
-		auditing). Maintained by UNIT Technology Corporation as a fork of
-		dai0304/spring-data-mirage. It uses the package
-		"vn.com.unit.springframework.data.mirage", requires Java 17+ and is built
-		against Spring Boot 4 (Spring Framework 7, Spring Data Commons 4.1) and
-		Mirage SQL 5.x.</description>
+	<description>Spring Data integration for Mirage SQL, simplifying the development
+		of Spring-powered applications with Mirage SQL-based data access
+		layers. Originally forked from dai0304/spring-data-mirage and
+		actively developed and maintained by UNIT Technology Corporation.
+		Supports Spring Boot 4 and Mirage SQL 5.x.</description>
 	<url>https://github.com/unit-corp/spring-data-mirage</url>
 	<organization>
 		<name>UNIT Technology Corporation</name>
@@ -70,12 +62,23 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
-		<maven.compiler.release>${java.version}</maven.compiler.release>
+		<maven.compiler.source>${java.version}</maven.compiler.source>
+		<maven.compiler.target>${java.version}</maven.compiler.target>
 		<main.basedir>${project.basedir}</main.basedir>
 
-		<guava.version>33.7.2-jre</guava.version>
+		<spring.boot.version>4.1.2</spring.boot.version>
+		<spring-boot-maven-plugin.version>${spring.boot.version}</spring-boot-maven-plugin.version>
+		<maven-deploy-plugin.version>3.2.0</maven-deploy-plugin.version>
+		<maven-source-plugin.version>3.4.0</maven-source-plugin.version>
+		<maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
+		<maven-gpg-plugin.version>3.2.8</maven-gpg-plugin.version>
+		<central-publishing-maven-plugin.version>0.12.0</central-publishing-maven-plugin.version>
+		<git-commit-id-maven-plugin.version>9.2.0</git-commit-id-maven-plugin.version>
+		<maven-surefire-plugin.version>3.6.1</maven-surefire-plugin.version>
+		<gmavenplus-plugin.version>5.1.0</gmavenplus-plugin.version>
+
 		<vavr.version>1.1.0</vavr.version>
-		<mirage.version>5.1.0-SNAPSHOT</mirage.version>
+		<mirage.version>5.0.0</mirage.version>
 		<spar-wings-spring-data-chunk.version>1.0.0</spar-wings-spring-data-chunk.version>
 		<maven-deploy-plugin.version>3.2.0</maven-deploy-plugin.version>
 		<maven-source-plugin.version>3.4.0</maven-source-plugin.version>
@@ -85,34 +88,55 @@
 		<git-commit-id-maven-plugin.version>9.2.0</git-commit-id-maven-plugin.version>
 	</properties>
 
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-dependencies</artifactId>
+				<version>${spring.boot.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>vn.com.unit.spar-wings</groupId>
+				<artifactId>spar-wings-spring-data-chunk</artifactId>
+				<version>${spar-wings-spring-data-chunk.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>vn.com.unit.miragesql</groupId>
+				<artifactId>miragesql-parent</artifactId>
+				<version>${mirage.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>io.vavr</groupId>
+				<artifactId>vavr</artifactId>
+				<version>${vavr.version}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-commons</artifactId>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>vn.com.unit.miragesql</groupId>
-			<artifactId>miragesql</artifactId>
-			<version>${mirage.version}</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>vn.com.unit.miragesql</groupId>
-			<artifactId>miragesql-integration</artifactId>
-			<version>${mirage.version}</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>io.vavr</groupId>
-			<artifactId>vavr</artifactId>
-			<version>${vavr.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>vn.com.unit.spar-wings</groupId>
 			<artifactId>spar-wings-spring-data-chunk</artifactId>
-			<version>${spar-wings-spring-data-chunk.version}</version>
-			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>vn.com.unit.miragesql</groupId>
+			<artifactId>miragesql</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>vn.com.unit.miragesql</groupId>
+			<artifactId>miragesql-integration</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.vavr</groupId>
+			<artifactId>vavr</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -124,10 +148,10 @@
 			<artifactId>spring-jdbc</artifactId>
 			<scope>provided</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>${guava.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -152,7 +176,6 @@
 			<resource>
 				<directory>src/main/resources</directory>
 			</resource>
-			<!-- Apache License 2.0: ship LICENSE and NOTICE (kept in the repository root) inside the jar -->
 			<resource>
 				<directory>${project.basedir}</directory>
 				<targetPath>META-INF</targetPath>
@@ -283,6 +306,12 @@
 		</plugins>
 	</build>
 	<profiles>
+		<profile>
+			<id>default</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+		</profile>
 		<profile>
 			<id>central-publishing</id>
 			<build>
