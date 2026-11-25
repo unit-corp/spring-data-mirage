@@ -2,7 +2,7 @@ package vn.com.unit.springframework.data.mirage.repository.support;
 
 import java.lang.reflect.Method;
 
-import org.springframework.data.core.TypeInformation;
+import org.springframework.data.util.TypeInformation;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.repository.core.support.AnnotationRepositoryMetadata;

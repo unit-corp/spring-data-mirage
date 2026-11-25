@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Locale;
 
 import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.data.core.TypeInformation;
+import org.springframework.data.util.TypeInformation;
 import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.repository.query.Parameters;

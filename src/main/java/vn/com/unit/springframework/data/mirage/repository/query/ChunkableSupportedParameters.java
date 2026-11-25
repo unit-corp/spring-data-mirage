@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 import org.springframework.core.MethodParameter;
-import org.springframework.data.core.TypeInformation;
+import org.springframework.data.util.TypeInformation;
 import org.springframework.data.repository.query.Parameters;
 
 import vn.com.unit.sparwings.spring.data.chunk.Chunkable;

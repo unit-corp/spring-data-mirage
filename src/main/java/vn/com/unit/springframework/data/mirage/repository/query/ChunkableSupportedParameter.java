@@ -19,7 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.core.MethodParameter;
-import org.springframework.data.core.TypeInformation;
+import org.springframework.data.util.TypeInformation;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.query.Parameter;
